@@ -25,7 +25,7 @@ struct MedicineDetailView: View {
                 // History Section
                 historySection
             }
-            .padding(.vertical)
+            .padding()
         }
         .navigationBarTitle("Medicine Details", displayMode: .inline)
         .onAppear {
@@ -48,7 +48,6 @@ extension MedicineDetailView {
             .textFieldStyle(RoundedBorderTextFieldStyle())
             .padding(.bottom, 10)
         }
-        .padding(.horizontal)
     }
 
     private var medicineStockSection: some View {
@@ -79,7 +78,6 @@ extension MedicineDetailView {
             }
             .padding(.bottom, 10)
         }
-        .padding(.horizontal)
     }
 
     private var medicineAisleSection: some View {
@@ -92,7 +90,6 @@ extension MedicineDetailView {
             .textFieldStyle(RoundedBorderTextFieldStyle())
             .padding(.bottom, 10)
         }
-        .padding(.horizontal)
     }
 
     private var historySection: some View {
@@ -117,7 +114,6 @@ extension MedicineDetailView {
                 .padding(.bottom, 5)
             }
         }
-        .padding(.horizontal)
     }
 }
 
