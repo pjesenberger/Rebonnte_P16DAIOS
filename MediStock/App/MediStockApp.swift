@@ -16,6 +16,7 @@ struct MediStockApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(sessionStore)
+                .tint(Color(.green))
         }
     }
 }

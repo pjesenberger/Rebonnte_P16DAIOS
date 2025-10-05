@@ -9,7 +9,7 @@ struct MedicineDetailView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
                 // Title
-                Text(medicine.name)
+                Label(medicine.name, systemImage: "pill.fill")
                     .font(.largeTitle)
                     .padding(.top, 20)
 
@@ -55,28 +55,19 @@ extension MedicineDetailView {
                 .font(.headline)
             
             HStack {
-                Button(action: {
-                    viewModel.decreaseStock(medicine, user: session.session?.uid ?? "")
-                }) {
-                    Image(systemName: "minus.circle")
-                        .font(.title)
-                        .foregroundColor(.red)
-                }
-                
                 TextField("Stock", value: $medicine.stock, formatter: NumberFormatter(), onCommit: {
                     viewModel.updateMedicine(medicine, user: session.session?.uid ?? "")
                 })
                 .customTextField()
                 
-                Button(action: {
+                StockButton(systemName: "plus.square", color: .green) {
                     viewModel.increaseStock(medicine, user: session.session?.uid ?? "")
-                }) {
-                    Image(systemName: "plus.circle")
-                        .font(.title)
-                        .foregroundColor(.green)
+                }
+                
+                StockButton(systemName: "minus.square", color: .red) {
+                    viewModel.decreaseStock(medicine, user: session.session?.uid ?? "")
                 }
             }
-            .padding(.bottom, 10)
         }
     }
 
@@ -97,34 +88,42 @@ extension MedicineDetailView {
                 .font(.headline)
                 .padding(.vertical, 20)
             
-            ForEach(viewModel.history.filter { $0.medicineId == medicine.id }, id: \.id) { entry in
-                VStack(alignment: .leading, spacing: 12) {
-                    Text(entry.action)
-                        .font(.headline)
-                    
-                    HistoryField(
-                        icon: "person.fill",
-                        label: "User",
-                        value: entry.user
-                    )
-                    
-                    HistoryField(
-                        icon: "clock.fill",
-                        label: "Date",
-                        value: entry.timestamp.formatted()
-                    )
-                    
-                    HistoryField(
-                        icon: "doc.text.fill",
-                        label: "Details",
-                        value: entry.details,
-                        isLast: true
-                    )
+            let filteredHistory = viewModel.history.filter { $0.medicineId == medicine.id }
+            
+            if filteredHistory.isEmpty {
+                Text("No history")
+                    .foregroundColor(.gray)
+                    .italic()
+            } else {
+                ForEach(filteredHistory, id: \.id) { entry in
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text(entry.action)
+                            .font(.headline)
+                        
+                        HistoryField(
+                            icon: "person.fill",
+                            label: "User",
+                            value: entry.user
+                        )
+                        
+                        HistoryField(
+                            icon: "clock.fill",
+                            label: "Date",
+                            value: entry.timestamp.formatted()
+                        )
+                        
+                        HistoryField(
+                            icon: "doc.text.fill",
+                            label: "Details",
+                            value: entry.details,
+                            isLast: true
+                        )
+                    }
+                    .padding()
+                    .background(Color(.systemGray6))
+                    .cornerRadius(10)
+                    .padding(.bottom, 5)
                 }
-                .padding()
-                .background(Color(.systemGray6))
-                .cornerRadius(10)
-                .padding(.bottom, 5)
             }
         }
     }
