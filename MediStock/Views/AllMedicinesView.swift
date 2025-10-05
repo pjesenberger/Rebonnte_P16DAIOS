@@ -11,8 +11,7 @@ struct AllMedicinesView: View {
                 // Filtrage et Tri
                 HStack {
                     TextField("Filter by name", text: $filterText)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .padding(.leading, 10)
+                        .customTextField()
                     
                     Spacer()
 

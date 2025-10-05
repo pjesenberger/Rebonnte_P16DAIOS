@@ -8,11 +8,10 @@ struct LoginView: View {
     var body: some View {
         VStack {
             TextField("Email", text: $email)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding()
+                .customTextField()
+            
             SecureField("Password", text: $password)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding()
+                .customTextField()
             Button(action: {
                 session.signIn(email: email, password: password)
             }) {

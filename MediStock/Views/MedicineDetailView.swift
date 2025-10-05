@@ -45,8 +45,7 @@ extension MedicineDetailView {
             TextField("Name", text: $medicine.name, onCommit: {
                 viewModel.updateMedicine(medicine, user: session.session?.uid ?? "")
             })
-            .textFieldStyle(RoundedBorderTextFieldStyle())
-            .padding(.bottom, 10)
+            .customTextField()
         }
     }
 
@@ -65,9 +64,7 @@ extension MedicineDetailView {
                 TextField("Stock", value: $medicine.stock, formatter: NumberFormatter(), onCommit: {
                     viewModel.updateMedicine(medicine, user: session.session?.uid ?? "")
                 })
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .keyboardType(.numberPad)
-                .frame(width: 100)
+                .customTextField()
                 Button(action: {
                     viewModel.increaseStock(medicine, user: session.session?.uid ?? "")
                 }) {
@@ -87,8 +84,7 @@ extension MedicineDetailView {
             TextField("Aisle", text: $medicine.aisle, onCommit: {
                 viewModel.updateMedicine(medicine, user: session.session?.uid ?? "")
             })
-            .textFieldStyle(RoundedBorderTextFieldStyle())
-            .padding(.bottom, 10)
+            .customTextField()
         }
     }
 
