@@ -6,7 +6,7 @@ struct LoginView: View {
     @EnvironmentObject var session: SessionStore
 
     var body: some View {
-        VStack {
+        VStack(spacing: 12) {
             TextField("Email", text: $email)
                 .customTextField()
             

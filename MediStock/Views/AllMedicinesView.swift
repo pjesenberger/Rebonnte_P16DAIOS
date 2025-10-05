@@ -21,9 +21,8 @@ struct AllMedicinesView: View {
                         Text("Stock").tag(SortOption.stock)
                     }
                     .pickerStyle(MenuPickerStyle())
-                    .padding(.trailing, 10)
                 }
-                .padding(.top, 10)
+                .padding([.horizontal, .top])
                 
                 // Liste des Médicaments
                 List {

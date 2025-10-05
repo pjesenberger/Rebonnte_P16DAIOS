@@ -53,6 +53,7 @@ extension MedicineDetailView {
         VStack(alignment: .leading) {
             Text("Stock")
                 .font(.headline)
+            
             HStack {
                 Button(action: {
                     viewModel.decreaseStock(medicine, user: session.session?.uid ?? "")
@@ -61,10 +62,12 @@ extension MedicineDetailView {
                         .font(.title)
                         .foregroundColor(.red)
                 }
+                
                 TextField("Stock", value: $medicine.stock, formatter: NumberFormatter(), onCommit: {
                     viewModel.updateMedicine(medicine, user: session.session?.uid ?? "")
                 })
                 .customTextField()
+                
                 Button(action: {
                     viewModel.increaseStock(medicine, user: session.session?.uid ?? "")
                 }) {
