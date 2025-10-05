@@ -95,17 +95,31 @@ extension MedicineDetailView {
         VStack(alignment: .leading) {
             Text("History")
                 .font(.headline)
-                .padding(.top, 20)
+                .padding(.vertical, 20)
+            
             ForEach(viewModel.history.filter { $0.medicineId == medicine.id }, id: \.id) { entry in
-                VStack(alignment: .leading, spacing: 5) {
+                VStack(alignment: .leading, spacing: 12) {
                     Text(entry.action)
                         .font(.headline)
-                    Text("User: \(entry.user)")
-                        .font(.subheadline)
-                    Text("Date: \(entry.timestamp.formatted())")
-                        .font(.subheadline)
-                    Text("Details: \(entry.details)")
-                        .font(.subheadline)
+                    
+                    HistoryField(
+                        icon: "person.fill",
+                        label: "User",
+                        value: entry.user
+                    )
+                    
+                    HistoryField(
+                        icon: "clock.fill",
+                        label: "Date",
+                        value: entry.timestamp.formatted()
+                    )
+                    
+                    HistoryField(
+                        icon: "doc.text.fill",
+                        label: "Details",
+                        value: entry.details,
+                        isLast: true
+                    )
                 }
                 .padding()
                 .background(Color(.systemGray6))
