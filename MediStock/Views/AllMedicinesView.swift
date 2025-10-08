@@ -4,6 +4,8 @@ struct AllMedicinesView: View {
     @ObservedObject var viewModel = MedicineStockViewModel()
     @State private var filterText: String = ""
     @State private var sortOption: SortOption = .none
+    @State private var showDeleteAlert = false
+    @State private var medicineToDelete: Medicine?
 
     var body: some View {
         NavigationView {
@@ -36,6 +38,24 @@ struct AllMedicinesView: View {
                             }
                         }
                     }
+                    .onDelete { indexSet in
+                        if let index = indexSet.first {
+                            medicineToDelete = filteredAndSortedMedicines[index]
+                            showDeleteAlert = true
+                        }
+                    }
+                }
+                .alert(isPresented: $showDeleteAlert) {
+                    Alert(
+                        title: Text("Delete Medicine"),
+                        message: Text("Are you sure you want to delete \(medicineToDelete?.name ?? "")?"),
+                        primaryButton: .destructive(Text("Delete")) {
+                            if let medicine = medicineToDelete {
+                                viewModel.deleteMedicine(medicine)
+                            }
+                        },
+                        secondaryButton: .cancel()
+                    )
                 }
                 .navigationBarTitle("All Medicines")
                 .navigationBarItems(trailing: Button(action: {

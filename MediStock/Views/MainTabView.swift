@@ -11,7 +11,7 @@ struct MainTabView: View {
 
             AllMedicinesView()
                 .tabItem {
-                    Image(systemName: "square.grid.2x2")
+                    Image(systemName: "pills.fill")
                     Text("All Medicines")
                 }
         }

@@ -4,7 +4,8 @@ struct MedicineDetailView: View {
     @State var medicine: Medicine
     @ObservedObject var viewModel = MedicineStockViewModel()
     @EnvironmentObject var session: SessionStore
-
+    @State private var showDeleteAlert = false
+    
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
@@ -12,22 +13,39 @@ struct MedicineDetailView: View {
                 Label(medicine.name, systemImage: "pill.fill")
                     .font(.largeTitle)
                     .padding(.top, 20)
-
+                
                 // Medicine Name
                 medicineNameSection
-
+                
                 // Medicine Stock
                 medicineStockSection
-
+                
                 // Medicine Aisle
                 medicineAisleSection
-
+                
                 // History Section
                 historySection
             }
             .padding()
         }
         .navigationBarTitle("Medicine Details", displayMode: .inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                SymbolButton(systemName: "trash", color: .red, font: .body) {
+                    showDeleteAlert = true
+                }
+            }
+        }
+        .alert(isPresented: $showDeleteAlert) {
+            Alert(
+                title: Text("Delete Medicine"),
+                message: Text("Are you sure you want to delete \(medicine.name)?"),
+                primaryButton: .destructive(Text("Delete")) {
+                    viewModel.deleteMedicine(medicine)
+                },
+                secondaryButton: .cancel()
+            )
+        }
         .onAppear {
             viewModel.fetchHistory(for: medicine)
         }
@@ -48,7 +66,7 @@ extension MedicineDetailView {
             .customTextField()
         }
     }
-
+    
     private var medicineStockSection: some View {
         VStack(alignment: .leading) {
             Text("Stock")
@@ -60,17 +78,17 @@ extension MedicineDetailView {
                 })
                 .customTextField()
                 
-                StockButton(systemName: "plus.square", color: .green) {
+                SymbolButton(systemName: "plus.square", color: .green, font: .title) {
                     viewModel.increaseStock(medicine, user: session.session?.uid ?? "")
                 }
                 
-                StockButton(systemName: "minus.square", color: .red) {
+                SymbolButton(systemName: "minus.square", color: .red, font: .title) {
                     viewModel.decreaseStock(medicine, user: session.session?.uid ?? "")
                 }
             }
         }
     }
-
+    
     private var medicineAisleSection: some View {
         VStack(alignment: .leading) {
             Text("Aisle")
@@ -81,7 +99,7 @@ extension MedicineDetailView {
             .customTextField()
         }
     }
-
+    
     private var historySection: some View {
         VStack(alignment: .leading) {
             Text("History")

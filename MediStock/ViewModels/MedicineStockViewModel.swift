@@ -53,6 +53,17 @@ class MedicineStockViewModel: ObservableObject {
             }
         }
     }
+    
+    func deleteMedicine(_ medicine: Medicine) {
+        guard let id = medicine.id else { return }
+        db.collection("medicines").document(id).delete { error in
+            if let error = error {
+                print("Error removing document: \(error)")
+            } else {
+                self.medicines.removeAll { $0.id == id }
+            }
+        }
+    }
 
     func increaseStock(_ medicine: Medicine, user: String) {
         updateStock(medicine, by: 1, user: user)
