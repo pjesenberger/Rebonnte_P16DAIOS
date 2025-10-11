@@ -5,28 +5,40 @@ struct MedicineDetailView: View {
     @ObservedObject var viewModel = MedicineStockViewModel()
     @EnvironmentObject var session: SessionStore
     @State private var showDeleteAlert = false
+    @State private var showDeleteError = false
+    @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                // Title
-                Label(medicine.name, systemImage: "pill.fill")
-                    .font(.largeTitle)
-                    .padding(.top, 20)
-                
-                // Medicine Name
-                medicineNameSection
-                
-                // Medicine Stock
-                medicineStockSection
-                
-                // Medicine Aisle
-                medicineAisleSection
-                
-                // History Section
-                historySection
+        ZStack {
+            if viewModel.isDeletingMedicine {
+                VStack(spacing: 20) {
+                    ProgressView("Deleting medicine...")
+                    Text("Please wait...")
+                        .foregroundColor(.gray)
+                }
+            } else {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 20) {
+                        // Title
+                        Label(medicine.name, systemImage: "pill.fill")
+                            .font(.largeTitle)
+                            .padding(.top, 20)
+                        
+                        // Medicine Name
+                        medicineNameSection
+                        
+                        // Medicine Stock
+                        medicineStockSection
+                        
+                        // Medicine Aisle
+                        medicineAisleSection
+                        
+                        // History Section
+                        historySection
+                    }
+                    .padding()
+                }
             }
-            .padding()
         }
         .navigationBarTitle("Medicine Details", displayMode: .inline)
         .toolbar {
@@ -34,6 +46,7 @@ struct MedicineDetailView: View {
                 SymbolButton(systemName: "trash", color: .red, font: .body) {
                     showDeleteAlert = true
                 }
+                .disabled(viewModel.isDeletingMedicine)
             }
         }
         .alert(isPresented: $showDeleteAlert) {
@@ -41,11 +54,33 @@ struct MedicineDetailView: View {
                 title: Text("Delete Medicine"),
                 message: Text("Are you sure you want to delete \(medicine.name)?"),
                 primaryButton: .destructive(Text("Delete")) {
-                    viewModel.deleteMedicine(medicine)
+                    viewModel.deleteMedicine(medicine) { success in
+                        if success {
+                            presentationMode.wrappedValue.dismiss()
+                        } else {
+                            showDeleteError = true
+                        }
+                    }
                 },
                 secondaryButton: .cancel()
             )
         }
+        .alert("Delete Error", isPresented: $showDeleteError, actions: {
+            Button("Retry") {
+                viewModel.deleteMedicine(medicine) { success in
+                    if success {
+                        presentationMode.wrappedValue.dismiss()
+                    } else {
+                        showDeleteError = true
+                    }
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                viewModel.errorMessage = nil
+            }
+        }, message: {
+            Text("Failed to delete \(medicine.name). Please try again.")
+        })
         .onAppear {
             viewModel.fetchHistory(for: medicine)
         }

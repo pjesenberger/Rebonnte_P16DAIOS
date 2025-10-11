@@ -5,29 +5,47 @@ class MedicineStockViewModel: ObservableObject {
     @Published var medicines: [Medicine] = []
     @Published var aisles: [String] = []
     @Published var history: [HistoryEntry] = []
+    @Published var isLoading = false
+    @Published var errorMessage: String?
+    @Published var isDeletingMedicine = false
+    
     private var db = Firestore.firestore()
 
     func fetchMedicines() {
+        isLoading = true
+        errorMessage = nil
+        
         db.collection("medicines").addSnapshotListener { (querySnapshot, error) in
+            self.isLoading = false
+            
             if let error = error {
                 print("Error getting documents: \(error)")
+                self.errorMessage = "Failed to load medicines. Please try again."
             } else {
                 self.medicines = querySnapshot?.documents.compactMap { document in
                     try? document.data(as: Medicine.self)
                 } ?? []
+                self.errorMessage = nil
             }
         }
     }
 
     func fetchAisles() {
+        isLoading = true
+        errorMessage = nil
+        
         db.collection("medicines").addSnapshotListener { (querySnapshot, error) in
+            self.isLoading = false
+            
             if let error = error {
                 print("Error getting documents: \(error)")
+                self.errorMessage = "Failed to load aisles. Please try again."
             } else {
                 let allMedicines = querySnapshot?.documents.compactMap { document in
                     try? document.data(as: Medicine.self)
                 } ?? []
                 self.aisles = Array(Set(allMedicines.map { $0.aisle })).sorted()
+                self.errorMessage = nil
             }
         }
     }
@@ -39,6 +57,7 @@ class MedicineStockViewModel: ObservableObject {
             addHistory(action: "Added \(medicine.name)", user: user, medicineId: medicine.id ?? "", details: "Added new medicine")
         } catch let error {
             print("Error adding document: \(error)")
+            self.errorMessage = "Failed to add medicine. Please try again."
         }
     }
 
@@ -54,13 +73,26 @@ class MedicineStockViewModel: ObservableObject {
         }
     }
     
-    func deleteMedicine(_ medicine: Medicine) {
-        guard let id = medicine.id else { return }
+    func deleteMedicine(_ medicine: Medicine, completion: ((Bool) -> Void)? = nil) {
+        guard let id = medicine.id else {
+            completion?(false)
+            return
+        }
+        
+        isDeletingMedicine = true
+        errorMessage = nil
+        
         db.collection("medicines").document(id).delete { error in
+            self.isDeletingMedicine = false
+            
             if let error = error {
                 print("Error removing document: \(error)")
+                self.errorMessage = "Failed to delete medicine. Please try again."
+                completion?(false)
             } else {
                 self.medicines.removeAll { $0.id == id }
+                self.errorMessage = nil
+                completion?(true)
             }
         }
     }
@@ -81,6 +113,7 @@ class MedicineStockViewModel: ObservableObject {
         ]) { error in
             if let error = error {
                 print("Error updating stock: \(error)")
+                self.errorMessage = "Failed to update stock. Please try again."
             } else {
                 if let index = self.medicines.firstIndex(where: { $0.id == id }) {
                     self.medicines[index].stock = newStock
@@ -97,6 +130,7 @@ class MedicineStockViewModel: ObservableObject {
             addHistory(action: "Updated \(medicine.name)", user: user, medicineId: id, details: "Updated medicine details")
         } catch let error {
             print("Error updating document: \(error)")
+            self.errorMessage = "Failed to update medicine. Please try again."
         }
     }
 
@@ -114,11 +148,16 @@ class MedicineStockViewModel: ObservableObject {
         db.collection("history").whereField("medicineId", isEqualTo: medicineId).addSnapshotListener { (querySnapshot, error) in
             if let error = error {
                 print("Error getting history: \(error)")
+                self.errorMessage = "Failed to load history. Please try again."
             } else {
                 self.history = querySnapshot?.documents.compactMap { document in
                     try? document.data(as: HistoryEntry.self)
                 } ?? []
             }
         }
+    }
+    
+    func retry() {
+        fetchMedicines()
     }
 }

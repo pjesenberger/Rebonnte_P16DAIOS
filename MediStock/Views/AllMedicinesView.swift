@@ -6,6 +6,7 @@ struct AllMedicinesView: View {
     @State private var sortOption: SortOption = .none
     @State private var showDeleteAlert = false
     @State private var medicineToDelete: Medicine?
+    @State private var showDeleteError = false
 
     var body: some View {
         NavigationView {
@@ -26,22 +27,57 @@ struct AllMedicinesView: View {
                 }
                 .padding([.horizontal, .top])
                 
-                // Liste des Médicaments
-                List {
-                    ForEach(filteredAndSortedMedicines, id: \.id) { medicine in
-                        NavigationLink(destination: MedicineDetailView(medicine: medicine, viewModel: viewModel)) {
-                            VStack(alignment: .leading) {
-                                Text(medicine.name)
-                                    .font(.headline)
-                                Text("Stock: \(medicine.stock)")
-                                    .font(.subheadline)
+                // Content avec gestion du loading et des erreurs
+                ZStack {
+                    if viewModel.isLoading && viewModel.medicines.isEmpty {
+                        ProgressView("Loading medicines...")
+                    } else if let errorMessage = viewModel.errorMessage, viewModel.medicines.isEmpty {
+                        VStack(spacing: 20) {
+                            Text(errorMessage)
+                                .foregroundColor(.red)
+                                .multilineTextAlignment(.center)
+                                .padding()
+                            
+                            Button(action: {
+                                viewModel.retry()
+                            }) {
+                                Text("Retry")
+                                    .foregroundStyle(Color.white)
+                                    .padding(12)
+                                    .padding(.horizontal)
+                                    .background(Color.green)
+                                    .cornerRadius(100)
                             }
                         }
-                    }
-                    .onDelete { indexSet in
-                        if let index = indexSet.first {
-                            medicineToDelete = filteredAndSortedMedicines[index]
-                            showDeleteAlert = true
+                    } else {
+                        // Liste des Médicaments
+                        List {
+                            ForEach(filteredAndSortedMedicines, id: \.id) { medicine in
+                                NavigationLink(destination: MedicineDetailView(medicine: medicine, viewModel: viewModel)) {
+                                    VStack(alignment: .leading) {
+                                        Text(medicine.name)
+                                            .font(.headline)
+                                        Text("Stock: \(medicine.stock)")
+                                            .font(.subheadline)
+                                    }
+                                }
+                                .disabled(viewModel.isDeletingMedicine)
+                                .opacity(viewModel.isDeletingMedicine ? 0.5 : 1.0)
+                            }
+                            .onDelete { indexSet in
+                                if let index = indexSet.first {
+                                    medicineToDelete = filteredAndSortedMedicines[index]
+                                    showDeleteAlert = true
+                                }
+                            }
+                            
+                            if viewModel.isDeletingMedicine {
+                                HStack {
+                                    Spacer()
+                                    ProgressView("Deleting...")
+                                    Spacer()
+                                }
+                            }
                         }
                     }
                 }
@@ -51,12 +87,43 @@ struct AllMedicinesView: View {
                         message: Text("Are you sure you want to delete \(medicineToDelete?.name ?? "")?"),
                         primaryButton: .destructive(Text("Delete")) {
                             if let medicine = medicineToDelete {
-                                viewModel.deleteMedicine(medicine)
+                                viewModel.deleteMedicine(medicine) { success in
+                                    if !success {
+                                        showDeleteError = true
+                                    }
+                                }
                             }
                         },
                         secondaryButton: .cancel()
                     )
                 }
+                .alert("Delete Error", isPresented: $showDeleteError, actions: {
+                    Button("Retry") {
+                        if let medicine = medicineToDelete {
+                            viewModel.deleteMedicine(medicine) { success in
+                                if !success {
+                                    showDeleteError = true
+                                }
+                            }
+                        }
+                    }
+                    Button("Cancel", role: .cancel) {
+                        viewModel.errorMessage = nil
+                        medicineToDelete = nil
+                    }
+                }, message: {
+                    Text("Failed to delete \(medicineToDelete?.name ?? "medicine"). Please try again.")
+                })
+                .alert("Error", isPresented: .constant(viewModel.errorMessage != nil && !viewModel.medicines.isEmpty && !showDeleteError), actions: {
+                    Button("Retry") {
+                        viewModel.retry()
+                    }
+                    Button("Cancel", role: .cancel) {
+                        viewModel.errorMessage = nil
+                    }
+                }, message: {
+                    Text(viewModel.errorMessage ?? "")
+                })
                 .navigationBarTitle("All Medicines")
                 .navigationBarItems(trailing: Button(action: {
                     viewModel.addRandomMedicine(user: "test_user") // Remplacez par l'utilisateur actuel
