@@ -39,6 +39,7 @@
 		C62CF9672E922C350040867F /* SymbolButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C62CF9662E922C350040867F /* SymbolButton.swift */; };
 		C6376F082E863837002F2C6C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C6376F072E863837002F2C6C /* GoogleService-Info.plist */; };
 		C67B37AA2E99564D0019CDD1 /* AuthenticationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C67B37A92E99564D0019CDD1 /* AuthenticationViewModel.swift */; };
+		C67B37AC2E9AA7580019CDD1 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = C67B37AB2E9AA7580019CDD1 /* User.swift */; };
 		C69EF1F22E91F9B7001C28AF /* CustomTextFieldStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C69EF1F12E91F9B7001C28AF /* CustomTextFieldStyle.swift */; };
 		C69EF1F42E920469001C28AF /* HistoryField.swift in Sources */ = {isa = PBXBuildFile; fileRef = C69EF1F32E920469001C28AF /* HistoryField.swift */; };
 /* End PBXBuildFile section */
@@ -85,6 +86,7 @@
 		C62CF9662E922C350040867F /* SymbolButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SymbolButton.swift; sourceTree = "<group>"; };
 		C6376F072E863837002F2C6C /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C67B37A92E99564D0019CDD1 /* AuthenticationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationViewModel.swift; sourceTree = "<group>"; };
+		C67B37AB2E9AA7580019CDD1 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		C69EF1F12E91F9B7001C28AF /* CustomTextFieldStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextFieldStyle.swift; sourceTree = "<group>"; };
 		C69EF1F32E920469001C28AF /* HistoryField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryField.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -222,6 +224,7 @@
 			children = (
 				53E0D8E92C066F7A00DE1134 /* HistoryEntry.swift */,
 				53E0D8DB2C06099C00DE1134 /* Medicine.swift */,
+				C67B37AB2E9AA7580019CDD1 /* User.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -422,6 +425,7 @@
 				53E0D8E82C066F6500DE1134 /* MedicineDetailView.swift in Sources */,
 				53E0D8EE2C06718100DE1134 /* AllMedicinesView.swift in Sources */,
 				C62CF9672E922C350040867F /* SymbolButton.swift in Sources */,
+				C67B37AC2E9AA7580019CDD1 /* User.swift in Sources */,
 				C69EF1F22E91F9B7001C28AF /* CustomTextFieldStyle.swift in Sources */,
 				C69EF1F42E920469001C28AF /* HistoryField.swift in Sources */,
 				53E0D8EC2C06717200DE1134 /* MainTabView.swift in Sources */,
