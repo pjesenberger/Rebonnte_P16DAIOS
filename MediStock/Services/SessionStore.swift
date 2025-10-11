@@ -15,26 +15,6 @@ class SessionStore: ObservableObject {
         }
     }
 
-    func signUp(email: String, password: String) {
-        Auth.auth().createUser(withEmail: email, password: password) { (result, error) in
-            if let error = error {
-                print("Error creating user: \(error.localizedDescription) \(error)")
-            } else {
-                self.session = User(uid: result?.user.uid ?? "", email: result?.user.email ?? "")
-            }
-        }
-    }
-
-    func signIn(email: String, password: String) {
-        Auth.auth().signIn(withEmail: email, password: password) { (result, error) in
-            if let error = error {
-                print("Error signing in: \(error.localizedDescription)")
-            } else {
-                self.session = User(uid: result?.user.uid ?? "", email: result?.user.email ?? "")
-            }
-        }
-    }
-
     func signOut() {
         do {
             try Auth.auth().signOut()

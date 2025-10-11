@@ -38,6 +38,7 @@
 		53E0D8EE2C06718100DE1134 /* AllMedicinesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8ED2C06718100DE1134 /* AllMedicinesView.swift */; };
 		C62CF9672E922C350040867F /* SymbolButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C62CF9662E922C350040867F /* SymbolButton.swift */; };
 		C6376F082E863837002F2C6C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C6376F072E863837002F2C6C /* GoogleService-Info.plist */; };
+		C67B37AA2E99564D0019CDD1 /* AuthenticationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C67B37A92E99564D0019CDD1 /* AuthenticationViewModel.swift */; };
 		C69EF1F22E91F9B7001C28AF /* CustomTextFieldStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C69EF1F12E91F9B7001C28AF /* CustomTextFieldStyle.swift */; };
 		C69EF1F42E920469001C28AF /* HistoryField.swift in Sources */ = {isa = PBXBuildFile; fileRef = C69EF1F32E920469001C28AF /* HistoryField.swift */; };
 /* End PBXBuildFile section */
@@ -83,6 +84,7 @@
 		53E0D8ED2C06718100DE1134 /* AllMedicinesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllMedicinesView.swift; sourceTree = "<group>"; };
 		C62CF9662E922C350040867F /* SymbolButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SymbolButton.swift; sourceTree = "<group>"; };
 		C6376F072E863837002F2C6C /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		C67B37A92E99564D0019CDD1 /* AuthenticationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationViewModel.swift; sourceTree = "<group>"; };
 		C69EF1F12E91F9B7001C28AF /* CustomTextFieldStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextFieldStyle.swift; sourceTree = "<group>"; };
 		C69EF1F32E920469001C28AF /* HistoryField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryField.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -210,6 +212,7 @@
 			isa = PBXGroup;
 			children = (
 				53E0D8DD2C0609A800DE1134 /* MedicineStockViewModel.swift */,
+				C67B37A92E99564D0019CDD1 /* AuthenticationViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -407,6 +410,7 @@
 			files = (
 				53E0D8E22C065FFE00DE1134 /* AppDelegate.swift in Sources */,
 				53E0D8D82C06097900DE1134 /* LoginView.swift in Sources */,
+				C67B37AA2E99564D0019CDD1 /* AuthenticationViewModel.swift in Sources */,
 				53E0D8EA2C066F7A00DE1134 /* HistoryEntry.swift in Sources */,
 				53E0D8E02C0609B900DE1134 /* SessionStore.swift in Sources */,
 				53E0D8DE2C0609A800DE1134 /* MedicineStockViewModel.swift in Sources */,

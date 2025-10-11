@@ -8,7 +8,7 @@ struct ContentView: View {
             if session.session != nil {
                 MainTabView()
             } else {
-                LoginView()
+                LoginView(sessionStore: session)
             }
         }
         .onAppear {
