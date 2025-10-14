@@ -7,24 +7,10 @@ struct AisleListView: View {
         NavigationView {
             ZStack {
                 if viewModel.isLoading && viewModel.aisles.isEmpty {
-                    ProgressView("Loading aisles...")
+                    LoadingStateView(message: "Loading aisles...")
                 } else if let errorMessage = viewModel.errorMessage, viewModel.aisles.isEmpty {
-                    VStack(spacing: 20) {
-                        Text(errorMessage)
-                            .foregroundColor(.red)
-                            .multilineTextAlignment(.center)
-                            .padding()
-                        
-                        Button(action: {
-                            viewModel.fetchAisles()
-                        }) {
-                            Text("Retry")
-                                .foregroundStyle(Color.white)
-                                .padding(12)
-                                .padding(.horizontal)
-                                .background(Color.green)
-                                .cornerRadius(100)
-                        }
+                    ErrorStateView(errorMessage: errorMessage) {
+                        viewModel.fetchAisles()
                     }
                 } else {
                     List {
@@ -36,19 +22,19 @@ struct AisleListView: View {
                     }
                 }
             }
-            .alert("Error", isPresented: .constant(viewModel.errorMessage != nil && !viewModel.aisles.isEmpty), actions: {
-                Button("Retry") {
+            .errorAlert(
+                isPresented: .constant(viewModel.errorMessage != nil && !viewModel.aisles.isEmpty),
+                message: viewModel.errorMessage ?? "",
+                onRetry: {
                     viewModel.fetchAisles()
-                }
-                Button("Cancel", role: .cancel) {
+                },
+                onCancel: {
                     viewModel.errorMessage = nil
                 }
-            }, message: {
-                Text(viewModel.errorMessage ?? "")
-            })
+            )
             .navigationBarTitle("Aisles")
             .navigationBarItems(trailing: Button(action: {
-                viewModel.addRandomMedicine(user: "test_user") // Remplacez par l'utilisateur actuel
+                viewModel.addRandomMedicine(user: "test_user")
             }) {
                 Image(systemName: "plus")
             })

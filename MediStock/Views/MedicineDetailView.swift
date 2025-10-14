@@ -49,24 +49,23 @@ struct MedicineDetailView: View {
                 .disabled(viewModel.isDeletingMedicine)
             }
         }
-        .alert(isPresented: $showDeleteAlert) {
-            Alert(
-                title: Text("Delete Medicine"),
-                message: Text("Are you sure you want to delete \(medicine.name)?"),
-                primaryButton: .destructive(Text("Delete")) {
-                    viewModel.deleteMedicine(medicine) { success in
-                        if success {
-                            presentationMode.wrappedValue.dismiss()
-                        } else {
-                            showDeleteError = true
-                        }
-                    }
-                },
-                secondaryButton: .cancel()
-            )
+        .deleteConfirmation(
+            isPresented: $showDeleteAlert,
+            itemName: medicine.name
+        ) {
+            viewModel.deleteMedicine(medicine) { success in
+                if success {
+                    presentationMode.wrappedValue.dismiss()
+                } else {
+                    showDeleteError = true
+                }
+            }
         }
-        .alert("Delete Error", isPresented: $showDeleteError, actions: {
-            Button("Retry") {
+        .errorAlert(
+            isPresented: $showDeleteError,
+            title: "Delete Error",
+            message: "Failed to delete \(medicine.name). Please try again.",
+            onRetry: {
                 viewModel.deleteMedicine(medicine) { success in
                     if success {
                         presentationMode.wrappedValue.dismiss()
@@ -74,13 +73,11 @@ struct MedicineDetailView: View {
                         showDeleteError = true
                     }
                 }
-            }
-            Button("Cancel", role: .cancel) {
+            },
+            onCancel: {
                 viewModel.errorMessage = nil
             }
-        }, message: {
-            Text("Failed to delete \(medicine.name). Please try again.")
-        })
+        )
         .onAppear {
             viewModel.fetchHistory(for: medicine)
         }

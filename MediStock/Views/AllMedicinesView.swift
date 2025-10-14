@@ -30,24 +30,10 @@ struct AllMedicinesView: View {
                 // Content avec gestion du loading et des erreurs
                 ZStack {
                     if viewModel.isLoading && viewModel.medicines.isEmpty {
-                        ProgressView("Loading medicines...")
+                        LoadingStateView(message: "Loading medicines...")
                     } else if let errorMessage = viewModel.errorMessage, viewModel.medicines.isEmpty {
-                        VStack(spacing: 20) {
-                            Text(errorMessage)
-                                .foregroundColor(.red)
-                                .multilineTextAlignment(.center)
-                                .padding()
-                            
-                            Button(action: {
-                                viewModel.retry()
-                            }) {
-                                Text("Retry")
-                                    .foregroundStyle(Color.white)
-                                    .padding(12)
-                                    .padding(.horizontal)
-                                    .background(Color.green)
-                                    .cornerRadius(100)
-                            }
+                        ErrorStateView(errorMessage: errorMessage) {
+                            viewModel.retry()
                         }
                     } else {
                         // Liste des Médicaments
@@ -61,8 +47,7 @@ struct AllMedicinesView: View {
                                             .font(.subheadline)
                                     }
                                 }
-                                .disabled(viewModel.isDeletingMedicine)
-                                .opacity(viewModel.isDeletingMedicine ? 0.5 : 1.0)
+                                .disabledWhileDeleting(viewModel.isDeletingMedicine)
                             }
                             .onDelete { indexSet in
                                 if let index = indexSet.first {
@@ -71,34 +56,27 @@ struct AllMedicinesView: View {
                                 }
                             }
                             
-                            if viewModel.isDeletingMedicine {
-                                HStack {
-                                    Spacer()
-                                    ProgressView("Deleting...")
-                                    Spacer()
-                                }
+                            DeletingOverlay(isDeleting: viewModel.isDeletingMedicine)
+                        }
+                    }
+                }
+                .deleteConfirmation(
+                    isPresented: $showDeleteAlert,
+                    itemName: medicineToDelete?.name ?? ""
+                ) {
+                    if let medicine = medicineToDelete {
+                        viewModel.deleteMedicine(medicine) { success in
+                            if !success {
+                                showDeleteError = true
                             }
                         }
                     }
                 }
-                .alert(isPresented: $showDeleteAlert) {
-                    Alert(
-                        title: Text("Delete Medicine"),
-                        message: Text("Are you sure you want to delete \(medicineToDelete?.name ?? "")?"),
-                        primaryButton: .destructive(Text("Delete")) {
-                            if let medicine = medicineToDelete {
-                                viewModel.deleteMedicine(medicine) { success in
-                                    if !success {
-                                        showDeleteError = true
-                                    }
-                                }
-                            }
-                        },
-                        secondaryButton: .cancel()
-                    )
-                }
-                .alert("Delete Error", isPresented: $showDeleteError, actions: {
-                    Button("Retry") {
+                .errorAlert(
+                    isPresented: $showDeleteError,
+                    title: "Delete Error",
+                    message: "Failed to delete \(medicineToDelete?.name ?? "medicine"). Please try again.",
+                    onRetry: {
                         if let medicine = medicineToDelete {
                             viewModel.deleteMedicine(medicine) { success in
                                 if !success {
@@ -106,27 +84,25 @@ struct AllMedicinesView: View {
                                 }
                             }
                         }
-                    }
-                    Button("Cancel", role: .cancel) {
+                    },
+                    onCancel: {
                         viewModel.errorMessage = nil
                         medicineToDelete = nil
                     }
-                }, message: {
-                    Text("Failed to delete \(medicineToDelete?.name ?? "medicine"). Please try again.")
-                })
-                .alert("Error", isPresented: .constant(viewModel.errorMessage != nil && !viewModel.medicines.isEmpty && !showDeleteError), actions: {
-                    Button("Retry") {
+                )
+                .errorAlert(
+                    isPresented: .constant(viewModel.errorMessage != nil && !viewModel.medicines.isEmpty && !showDeleteError),
+                    message: viewModel.errorMessage ?? "",
+                    onRetry: {
                         viewModel.retry()
-                    }
-                    Button("Cancel", role: .cancel) {
+                    },
+                    onCancel: {
                         viewModel.errorMessage = nil
                     }
-                }, message: {
-                    Text(viewModel.errorMessage ?? "")
-                })
+                )
                 .navigationBarTitle("All Medicines")
                 .navigationBarItems(trailing: Button(action: {
-                    viewModel.addRandomMedicine(user: "test_user") // Remplacez par l'utilisateur actuel
+                    viewModel.addRandomMedicine(user: "test_user")
                 }) {
                     Image(systemName: "plus")
                 })

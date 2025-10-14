@@ -38,6 +38,12 @@
 		53E0D8EE2C06718100DE1134 /* AllMedicinesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8ED2C06718100DE1134 /* AllMedicinesView.swift */; };
 		C62CF9672E922C350040867F /* SymbolButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = C62CF9662E922C350040867F /* SymbolButton.swift */; };
 		C6376F082E863837002F2C6C /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C6376F072E863837002F2C6C /* GoogleService-Info.plist */; };
+		C678A4972E9EBE970038A92A /* DeletingOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = C678A4962E9EBE970038A92A /* DeletingOverlay.swift */; };
+		C678A4992E9EBED20038A92A /* DisabledWhileDeletingModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = C678A4982E9EBED20038A92A /* DisabledWhileDeletingModifier.swift */; };
+		C678A49B2E9EBEF90038A92A /* ErrorAlertModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = C678A49A2E9EBEF90038A92A /* ErrorAlertModifier.swift */; };
+		C678A49F2E9EBF1E0038A92A /* DeleteConfirmationModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = C678A49E2E9EBF1E0038A92A /* DeleteConfirmationModifier.swift */; };
+		C678A4A12E9EBF2D0038A92A /* ErrorStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C678A4A02E9EBF2D0038A92A /* ErrorStateView.swift */; };
+		C678A4A32E9EBF390038A92A /* LoadingStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C678A4A22E9EBF390038A92A /* LoadingStateView.swift */; };
 		C67B37AA2E99564D0019CDD1 /* AuthenticationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C67B37A92E99564D0019CDD1 /* AuthenticationViewModel.swift */; };
 		C67B37AC2E9AA7580019CDD1 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = C67B37AB2E9AA7580019CDD1 /* User.swift */; };
 		C69EF1F22E91F9B7001C28AF /* CustomTextFieldStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C69EF1F12E91F9B7001C28AF /* CustomTextFieldStyle.swift */; };
@@ -85,6 +91,12 @@
 		53E0D8ED2C06718100DE1134 /* AllMedicinesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AllMedicinesView.swift; sourceTree = "<group>"; };
 		C62CF9662E922C350040867F /* SymbolButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SymbolButton.swift; sourceTree = "<group>"; };
 		C6376F072E863837002F2C6C /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		C678A4962E9EBE970038A92A /* DeletingOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeletingOverlay.swift; sourceTree = "<group>"; };
+		C678A4982E9EBED20038A92A /* DisabledWhileDeletingModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DisabledWhileDeletingModifier.swift; sourceTree = "<group>"; };
+		C678A49A2E9EBEF90038A92A /* ErrorAlertModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorAlertModifier.swift; sourceTree = "<group>"; };
+		C678A49E2E9EBF1E0038A92A /* DeleteConfirmationModifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteConfirmationModifier.swift; sourceTree = "<group>"; };
+		C678A4A02E9EBF2D0038A92A /* ErrorStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorStateView.swift; sourceTree = "<group>"; };
+		C678A4A22E9EBF390038A92A /* LoadingStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingStateView.swift; sourceTree = "<group>"; };
 		C67B37A92E99564D0019CDD1 /* AuthenticationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationViewModel.swift; sourceTree = "<group>"; };
 		C67B37AB2E9AA7580019CDD1 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		C69EF1F12E91F9B7001C28AF /* CustomTextFieldStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextFieldStyle.swift; sourceTree = "<group>"; };
@@ -258,8 +270,14 @@
 			isa = PBXGroup;
 			children = (
 				C69EF1F12E91F9B7001C28AF /* CustomTextFieldStyle.swift */,
+				C678A49A2E9EBEF90038A92A /* ErrorAlertModifier.swift */,
+				C678A49E2E9EBF1E0038A92A /* DeleteConfirmationModifier.swift */,
+				C678A4A02E9EBF2D0038A92A /* ErrorStateView.swift */,
+				C678A4A22E9EBF390038A92A /* LoadingStateView.swift */,
 				C69EF1F32E920469001C28AF /* HistoryField.swift */,
 				C62CF9662E922C350040867F /* SymbolButton.swift */,
+				C678A4982E9EBED20038A92A /* DisabledWhileDeletingModifier.swift */,
+				C678A4962E9EBE970038A92A /* DeletingOverlay.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -413,20 +431,26 @@
 			files = (
 				53E0D8E22C065FFE00DE1134 /* AppDelegate.swift in Sources */,
 				53E0D8D82C06097900DE1134 /* LoginView.swift in Sources */,
+				C678A4992E9EBED20038A92A /* DisabledWhileDeletingModifier.swift in Sources */,
 				C67B37AA2E99564D0019CDD1 /* AuthenticationViewModel.swift in Sources */,
 				53E0D8EA2C066F7A00DE1134 /* HistoryEntry.swift in Sources */,
 				53E0D8E02C0609B900DE1134 /* SessionStore.swift in Sources */,
 				53E0D8DE2C0609A800DE1134 /* MedicineStockViewModel.swift in Sources */,
 				53E0D8992C06084700DE1134 /* ContentView.swift in Sources */,
 				53E0D8DC2C06099C00DE1134 /* Medicine.swift in Sources */,
+				C678A4972E9EBE970038A92A /* DeletingOverlay.swift in Sources */,
 				53E0D8DA2C06098F00DE1134 /* MedicineListView.swift in Sources */,
+				C678A4A32E9EBF390038A92A /* LoadingStateView.swift in Sources */,
 				53E0D8E62C066F4100DE1134 /* AisleListView.swift in Sources */,
 				53E0D8972C06084700DE1134 /* MediStockApp.swift in Sources */,
+				C678A49F2E9EBF1E0038A92A /* DeleteConfirmationModifier.swift in Sources */,
 				53E0D8E82C066F6500DE1134 /* MedicineDetailView.swift in Sources */,
 				53E0D8EE2C06718100DE1134 /* AllMedicinesView.swift in Sources */,
 				C62CF9672E922C350040867F /* SymbolButton.swift in Sources */,
+				C678A49B2E9EBEF90038A92A /* ErrorAlertModifier.swift in Sources */,
 				C67B37AC2E9AA7580019CDD1 /* User.swift in Sources */,
 				C69EF1F22E91F9B7001C28AF /* CustomTextFieldStyle.swift in Sources */,
+				C678A4A12E9EBF2D0038A92A /* ErrorStateView.swift in Sources */,
 				C69EF1F42E920469001C28AF /* HistoryField.swift in Sources */,
 				53E0D8EC2C06717200DE1134 /* MainTabView.swift in Sources */,
 			);
@@ -594,7 +618,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"MediStock/Preview Content\"";
-				DEVELOPMENT_TEAM = XGPW6P5YG8;
+				DEVELOPMENT_TEAM = GJ746626DJ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -623,7 +647,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"MediStock/Preview Content\"";
-				DEVELOPMENT_TEAM = XGPW6P5YG8;
+				DEVELOPMENT_TEAM = GJ746626DJ;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -650,6 +674,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = GJ746626DJ;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
 				MARKETING_VERSION = 1.0;
@@ -668,6 +693,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = GJ746626DJ;
 				GENERATE_INFOPLIST_FILE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
 				MARKETING_VERSION = 1.0;
@@ -685,6 +711,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = GJ746626DJ;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.rebonnte.MediStockUITests;
@@ -701,6 +728,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = GJ746626DJ;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.rebonnte.MediStockUITests;
