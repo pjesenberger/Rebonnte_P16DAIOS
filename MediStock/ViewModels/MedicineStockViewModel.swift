@@ -49,6 +49,41 @@ class MedicineStockViewModel: ObservableObject {
             }
         }
     }
+    
+    func addMedicine(_ medicine: Medicine, user: String, completion: ((Bool) -> Void)? = nil) {
+        isLoading = true
+        errorMessage = nil
+        
+        do {
+            let documentRef = db.collection("medicines").document()
+            var newMedicine = medicine
+            newMedicine.id = documentRef.documentID
+            
+            try documentRef.setData(from: newMedicine) { error in
+                self.isLoading = false
+                
+                if let error = error {
+                    print("Error adding document: \(error)")
+                    self.errorMessage = "Failed to add medicine. Please try again."
+                    completion?(false)
+                } else {
+                    self.addHistory(
+                        action: "Added \(medicine.name)",
+                        user: user,
+                        medicineId: newMedicine.id ?? "",
+                        details: "New medicine added - Stock: \(medicine.stock), Aisle: \(medicine.aisle)"
+                    )
+                    self.errorMessage = nil
+                    completion?(true)
+                }
+            }
+        } catch let error {
+            self.isLoading = false
+            print("Error encoding medicine: \(error)")
+            self.errorMessage = "Failed to add medicine. Please try again."
+            completion?(false)
+        }
+    }
 
     func addRandomMedicine(user: String) {
         let medicine = Medicine(name: "Medicine \(Int.random(in: 1...100))", stock: Int.random(in: 1...100), aisle: "Aisle \(Int.random(in: 1...10))")

@@ -2,6 +2,8 @@ import SwiftUI
 
 struct AisleListView: View {
     @ObservedObject var viewModel = MedicineStockViewModel()
+    @State private var showingAddMedicine = false
+    @EnvironmentObject var session: SessionStore
 
     var body: some View {
         NavigationView {
@@ -34,10 +36,13 @@ struct AisleListView: View {
             )
             .navigationBarTitle("Aisles")
             .navigationBarItems(trailing: Button(action: {
-                viewModel.addRandomMedicine(user: "test_user")
+                showingAddMedicine = true
             }) {
                 Image(systemName: "plus")
             })
+            .sheet(isPresented: $showingAddMedicine) {
+                AddMedicineView(stockViewModel: viewModel, session: session)
+            }
         }
         .onAppear {
             viewModel.fetchAisles()
