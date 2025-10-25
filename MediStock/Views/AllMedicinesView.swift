@@ -109,28 +109,18 @@ struct AllMedicinesView: View {
             }
         }
         .onAppear {
-            viewModel.fetchMedicines()
+            viewModel.fetchMedicines(sortedBy: sortOption)
+        }
+        .onChange(of: sortOption) {
+            viewModel.fetchMedicines(sortedBy: sortOption)
         }
     }
     
     var filteredAndSortedMedicines: [Medicine] {
         var medicines = viewModel.medicines
-
-        // Filtrage
         if !filterText.isEmpty {
             medicines = medicines.filter { $0.name.lowercased().contains(filterText.lowercased()) }
         }
-
-        // Tri
-        switch sortOption {
-        case .name:
-            medicines.sort { $0.name.lowercased() < $1.name.lowercased() }
-        case .stock:
-            medicines.sort { $0.stock < $1.stock }
-        case .none:
-            break
-        }
-
         return medicines
     }
 }

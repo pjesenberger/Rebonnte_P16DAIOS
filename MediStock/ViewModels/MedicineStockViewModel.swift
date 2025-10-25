@@ -11,11 +11,22 @@ class MedicineStockViewModel: ObservableObject {
     
     private var db = Firestore.firestore()
 
-    func fetchMedicines() {
+    func fetchMedicines(sortedBy sortOption: SortOption = .none) {
         isLoading = true
         errorMessage = nil
         
-        db.collection("medicines").addSnapshotListener { (querySnapshot, error) in
+        var query: Query = db.collection("medicines")
+        
+        switch sortOption {
+        case .name:
+            query = query.order(by: "name", descending: false)
+        case .stock:
+            query = query.order(by: "stock", descending: false)
+        case .none:
+            break
+        }
+        
+        query.addSnapshotListener { (querySnapshot, error) in
             self.isLoading = false
             
             if let error = error {
