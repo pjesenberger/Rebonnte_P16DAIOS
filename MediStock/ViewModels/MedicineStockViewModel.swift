@@ -54,54 +54,67 @@ class MedicineStockViewModel: ObservableObject {
         isLoading = true
         errorMessage = nil
         
-        do {
-            let documentRef = db.collection("medicines").document()
-            var newMedicine = medicine
-            newMedicine.id = documentRef.documentID
-            
-            try documentRef.setData(from: newMedicine) { error in
-                self.isLoading = false
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                let documentRef = self.db.collection("medicines").document()
+                var newMedicine = medicine
+                newMedicine.id = documentRef.documentID
                 
-                if let error = error {
-                    print("Error adding document: \(error)")
+                try documentRef.setData(from: newMedicine) { error in
+                    DispatchQueue.main.async {
+                        self.isLoading = false
+                        
+                        if let error = error {
+                            print("Error adding document: \(error)")
+                            self.errorMessage = "Failed to add medicine. Please try again."
+                            completion?(false)
+                        } else {
+                            self.addHistory(
+                                action: "Added \(medicine.name)",
+                                user: user,
+                                medicineId: newMedicine.id ?? "",
+                                details: "New medicine added - Stock: \(medicine.stock), Aisle: \(medicine.aisle)"
+                            )
+                            self.errorMessage = nil
+                            completion?(true)
+                        }
+                    }
+                }
+            } catch let error {
+                DispatchQueue.main.async {
+                    self.isLoading = false
+                    print("Error encoding medicine: \(error)")
                     self.errorMessage = "Failed to add medicine. Please try again."
                     completion?(false)
-                } else {
-                    self.addHistory(
-                        action: "Added \(medicine.name)",
-                        user: user,
-                        medicineId: newMedicine.id ?? "",
-                        details: "New medicine added - Stock: \(medicine.stock), Aisle: \(medicine.aisle)"
-                    )
-                    self.errorMessage = nil
-                    completion?(true)
                 }
             }
-        } catch let error {
-            self.isLoading = false
-            print("Error encoding medicine: \(error)")
-            self.errorMessage = "Failed to add medicine. Please try again."
-            completion?(false)
         }
     }
 
     func addRandomMedicine(user: String) {
         let medicine = Medicine(name: "Medicine \(Int.random(in: 1...100))", stock: Int.random(in: 1...100), aisle: "Aisle \(Int.random(in: 1...10))")
-        do {
-            try db.collection("medicines").document(medicine.id ?? UUID().uuidString).setData(from: medicine)
-            addHistory(action: "Added \(medicine.name)", user: user, medicineId: medicine.id ?? "", details: "Added new medicine")
-        } catch let error {
-            print("Error adding document: \(error)")
-            self.errorMessage = "Failed to add medicine. Please try again."
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                try self.db.collection("medicines").document(medicine.id ?? UUID().uuidString).setData(from: medicine)
+                self.addHistory(action: "Added \(medicine.name)", user: user, medicineId: medicine.id ?? "", details: "Added new medicine")
+            } catch let error {
+                DispatchQueue.main.async {
+                    print("Error adding document: \(error)")
+                    self.errorMessage = "Failed to add medicine. Please try again."
+                }
+            }
         }
     }
 
     func deleteMedicines(at offsets: IndexSet) {
-        offsets.map { medicines[$0] }.forEach { medicine in
-            if let id = medicine.id {
-                db.collection("medicines").document(id).delete { error in
-                    if let error = error {
-                        print("Error removing document: \(error)")
+        DispatchQueue.global(qos: .userInitiated).async {
+            offsets.map { self.medicines[$0] }.forEach { medicine in
+                if let id = medicine.id {
+                    self.db.collection("medicines").document(id).delete { error in
+                        if let error = error {
+                            print("Error removing document: \(error)")
+                        }
                     }
                 }
             }
@@ -117,17 +130,21 @@ class MedicineStockViewModel: ObservableObject {
         isDeletingMedicine = true
         errorMessage = nil
         
-        db.collection("medicines").document(id).delete { error in
-            self.isDeletingMedicine = false
-            
-            if let error = error {
-                print("Error removing document: \(error)")
-                self.errorMessage = "Failed to delete medicine. Please try again."
-                completion?(false)
-            } else {
-                self.medicines.removeAll { $0.id == id }
-                self.errorMessage = nil
-                completion?(true)
+        DispatchQueue.global(qos: .userInitiated).async {
+            self.db.collection("medicines").document(id).delete { error in
+                DispatchQueue.main.async {
+                    self.isDeletingMedicine = false
+                    
+                    if let error = error {
+                        print("Error removing document: \(error)")
+                        self.errorMessage = "Failed to delete medicine. Please try again."
+                        completion?(false)
+                    } else {
+                        self.medicines.removeAll { $0.id == id }
+                        self.errorMessage = nil
+                        completion?(true)
+                    }
+                }
             }
         }
     }
@@ -143,38 +160,56 @@ class MedicineStockViewModel: ObservableObject {
     private func updateStock(_ medicine: Medicine, by amount: Int, user: String) {
         guard let id = medicine.id else { return }
         let newStock = medicine.stock + amount
-        db.collection("medicines").document(id).updateData([
-            "stock": newStock
-        ]) { error in
-            if let error = error {
-                print("Error updating stock: \(error)")
-                self.errorMessage = "Failed to update stock. Please try again."
-            } else {
-                if let index = self.medicines.firstIndex(where: { $0.id == id }) {
-                    self.medicines[index].stock = newStock
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            self.db.collection("medicines").document(id).updateData([
+                "stock": newStock
+            ]) { error in
+                DispatchQueue.main.async {
+                    if let error = error {
+                        print("Error updating stock: \(error)")
+                        self.errorMessage = "Failed to update stock. Please try again."
+                    } else {
+                        if let index = self.medicines.firstIndex(where: { $0.id == id }) {
+                            self.medicines[index].stock = newStock
+                        }
+                        self.addHistory(
+                            action: "\(amount > 0 ? "Increased" : "Decreased") stock of \(medicine.name) by \(abs(amount))",
+                            user: user,
+                            medicineId: id,
+                            details: "Stock changed from \(medicine.stock) to \(newStock)"
+                        )
+                    }
                 }
-                self.addHistory(action: "\(amount > 0 ? "Increased" : "Decreased") stock of \(medicine.name) by \(amount)", user: user, medicineId: id, details: "Stock changed from \(medicine.stock - amount) to \(newStock)")
             }
         }
     }
 
     func updateMedicine(_ medicine: Medicine, user: String) {
         guard let id = medicine.id else { return }
-        do {
-            try db.collection("medicines").document(id).setData(from: medicine)
-            addHistory(action: "Updated \(medicine.name)", user: user, medicineId: id, details: "Updated medicine details")
-        } catch let error {
-            print("Error updating document: \(error)")
-            self.errorMessage = "Failed to update medicine. Please try again."
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                try self.db.collection("medicines").document(id).setData(from: medicine)
+                self.addHistory(action: "Updated \(medicine.name)", user: user, medicineId: id, details: "Updated medicine details")
+            } catch let error {
+                DispatchQueue.main.async {
+                    print("Error updating document: \(error)")
+                    self.errorMessage = "Failed to update medicine. Please try again."
+                }
+            }
         }
     }
 
     private func addHistory(action: String, user: String, medicineId: String, details: String) {
         let history = HistoryEntry(medicineId: medicineId, user: user, action: action, details: details)
-        do {
-            try db.collection("history").document(history.id ?? UUID().uuidString).setData(from: history)
-        } catch let error {
-            print("Error adding history: \(error)")
+        
+        DispatchQueue.global(qos: .userInitiated).async {
+            do {
+                try self.db.collection("history").document(history.id ?? UUID().uuidString).setData(from: history)
+            } catch let error {
+                print("Error adding history: \(error)")
+            }
         }
     }
 
