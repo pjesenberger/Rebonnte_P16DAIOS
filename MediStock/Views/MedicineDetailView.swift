@@ -22,6 +22,7 @@ struct MedicineDetailView: View {
                         Label(medicine.name, systemImage: "pill.fill")
                             .font(.largeTitle)
                             .padding(.top, 20)
+                            .foregroundColor(.green)
                         
                         medicineNameSection
                         medicineStockSection

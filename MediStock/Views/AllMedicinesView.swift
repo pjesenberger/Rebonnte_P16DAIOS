@@ -7,11 +7,12 @@ struct AllMedicinesView: View {
     @State private var showDeleteAlert = false
     @State private var medicineToDelete: Medicine?
     @State private var showDeleteError = false
-
+    @State private var showingAddMedicine = false
+    @EnvironmentObject var session: SessionStore
+    
     var body: some View {
         NavigationView {
             VStack {
-                // Filtrage et Tri
                 HStack {
                     TextField("Filter by name", text: $filterText)
                         .customTextField()
@@ -27,7 +28,6 @@ struct AllMedicinesView: View {
                 }
                 .padding([.horizontal, .top])
                 
-                // Content avec gestion du loading et des erreurs
                 ZStack {
                     if viewModel.isLoading && viewModel.medicines.isEmpty {
                         Spacer()
@@ -40,7 +40,6 @@ struct AllMedicinesView: View {
                         }
                         Spacer()
                     } else {
-                        // Liste des Médicaments
                         List {
                             ForEach($viewModel.medicines.filter { med in
                                 (filterText.isEmpty || med.wrappedValue.name.lowercased().contains(filterText.lowercased()))
@@ -108,11 +107,14 @@ struct AllMedicinesView: View {
                 )
                 .navigationBarTitle("All Medicines")
                 .navigationBarItems(trailing: Button(action: {
-                    viewModel.addRandomMedicine(user: "test_user")
+                    showingAddMedicine = true
                 }) {
                     Image(systemName: "plus")
                 })
             }
+        }
+        .sheet(isPresented: $showingAddMedicine) {
+            AddMedicineView(stockViewModel: viewModel, session: session)
         }
         .onAppear {
             viewModel.fetchMedicines(sortedBy: sortOption)
