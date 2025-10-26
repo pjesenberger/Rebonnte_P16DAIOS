@@ -18,7 +18,6 @@ class AuthenticationViewModel: ObservableObject {
     }
     @Published var isLoading = false
     @Published var errorMessage: String?
-    @Published var showSignupConfirmation = false
     @Published var showAlert = false
     @Published var alertMessage = ""
     @Published var isEmailValid = true
@@ -58,12 +57,8 @@ class AuthenticationViewModel: ObservableObject {
         isEmailValid && isPasswordValid && !password.isEmpty && !isLoading
     }
 
-    func submit() {
-        guard canSubmit else { return }
-        signIn()
-    }
-
     func signIn() {
+        guard canSubmit else { return }
         isLoading = true
         errorMessage = nil
 
@@ -73,28 +68,17 @@ class AuthenticationViewModel: ObservableObject {
         Auth.auth().signIn(withEmail: emailTrimmed, password: passwordTrimmed) { [weak self] result, error in
             DispatchQueue.main.async {
                 self?.isLoading = false
-
                 if let error = error as NSError? {
-                    // Pour le code 17004 (invalidCredential), afficher un message générique
-                    if error.code == 17004 || error.code == AuthErrorCode.invalidCredential.rawValue {
-                        self?.alertMessage = "Invalid email or password"
-                        self?.showAlert = true
-                    } else if error.code == AuthErrorCode.userNotFound.rawValue {
-                        // Seulement si on reçoit explicitement userNotFound
-                        self?.showSignupConfirmation = true
-                    } else {
-                        self?.handleAuthError(error)
-                    }
-                } else {
-                    if let user = result?.user {
-                        self?.sessionStore.session = User(uid: user.uid, email: user.email)
-                    }
+                    self?.handleAuthError(error)
+                } else if let user = result?.user {
+                    self?.sessionStore.session = User(uid: user.uid, email: user.email)
                 }
             }
         }
     }
 
     func signUp() {
+        guard canSubmit else { return }
         isLoading = true
         errorMessage = nil
 
@@ -104,14 +88,10 @@ class AuthenticationViewModel: ObservableObject {
         Auth.auth().createUser(withEmail: emailTrimmed, password: passwordTrimmed) { [weak self] result, error in
             DispatchQueue.main.async {
                 self?.isLoading = false
-                self?.showSignupConfirmation = false
-
                 if let error = error as NSError? {
                     self?.handleAuthError(error)
-                } else {
-                    if let user = result?.user {
-                        self?.sessionStore.session = User(uid: user.uid, email: user.email)
-                    }
+                } else if let user = result?.user {
+                    self?.sessionStore.session = User(uid: user.uid, email: user.email)
                 }
             }
         }

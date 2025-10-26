@@ -21,10 +21,6 @@ struct LoginView: View {
                 .font(.title)
                 .bold()
             
-            Text("Log In")
-                .font(.title2)
-                .padding(.bottom, 32)
-            
             TextField("Email", text: $viewModel.email)
                 .customTextField()
                 .focused($focusedField, equals: .email)
@@ -35,7 +31,6 @@ struct LoginView: View {
                 .customTextField()
                 .focused($focusedField, equals: .password)
                 .submitLabel(.done)
-                .onSubmit { viewModel.submit() }
             
             if let error = viewModel.errorMessage {
                 Text(error)
@@ -45,30 +40,37 @@ struct LoginView: View {
                     .padding(.horizontal)
             }
             
-            Button(action: {
-                viewModel.submit()
-            }) {
-                Text(viewModel.isLoading ? "Processing..." : "Login")
-                    .foregroundStyle(Color.white)
-                    .padding(12)
-                    .padding(.horizontal)
-                    .background(Color.green)
-                    .cornerRadius(100)
+            HStack(spacing: 16) {
+                Button(action: {
+                    viewModel.signIn()
+                }) {
+                    Text(viewModel.isLoading ? "Processing..." : "Sign In")
+                        .foregroundStyle(Color.white)
+                        .padding(12)
+                        .padding(.horizontal)
+                        .background(Color.green)
+                        .cornerRadius(100)
+                }
+                .disabled(!viewModel.canSubmit)
+                .opacity(viewModel.canSubmit ? 1.0 : 0.5)
+
+                Button(action: {
+                    viewModel.signUp()
+                }) {
+                    Text(viewModel.isLoading ? "Processing..." : "Sign Up")
+                        .foregroundStyle(Color.white)
+                        .padding(12)
+                        .padding(.horizontal)
+                        .background(Color.green)
+                        .cornerRadius(100)
+                }
+                .disabled(!viewModel.canSubmit)
+                .opacity(viewModel.canSubmit ? 1.0 : 0.5)
             }
-            .disabled(!viewModel.canSubmit)
-            .opacity(viewModel.canSubmit ? 1.0 : 0.5)
             
             Spacer()
         }
         .padding()
-        .alert("Create Account", isPresented: $viewModel.showSignupConfirmation) {
-            Button("Cancel", role: .cancel) { }
-            Button("Create Account") {
-                viewModel.signUp()
-            }
-        } message: {
-            Text("No account found with this email. Would you like to create a new account?")
-        }
         .alert("Error", isPresented: $viewModel.showAlert) {
             Button("OK", role: .cancel) { }
         } message: {
