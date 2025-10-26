@@ -8,9 +8,10 @@ class MedicineStockViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var errorMessage: String?
     @Published var isDeletingMedicine = false
+    @Published var isUpdatingMedicine = false
     
     private var db = Firestore.firestore()
-
+    
     func fetchMedicines(sortedBy sortOption: SortOption = .none) {
         isLoading = true
         errorMessage = nil
@@ -40,7 +41,7 @@ class MedicineStockViewModel: ObservableObject {
             }
         }
     }
-
+    
     func fetchAisles() {
         isLoading = true
         errorMessage = nil
@@ -115,7 +116,7 @@ class MedicineStockViewModel: ObservableObject {
             }
         }
     }
-
+    
     func addRandomMedicine(user: String) {
         let medicine = Medicine(name: "Medicine \(Int.random(in: 1...100))", stock: Int.random(in: 1...100), aisle: "Aisle \(Int.random(in: 1...10))")
         
@@ -131,7 +132,7 @@ class MedicineStockViewModel: ObservableObject {
             }
         }
     }
-
+    
     func deleteMedicines(at offsets: IndexSet) {
         DispatchQueue.global(qos: .userInitiated).async {
             offsets.map { self.medicines[$0] }.forEach { medicine in
@@ -173,25 +174,27 @@ class MedicineStockViewModel: ObservableObject {
             }
         }
     }
-
+    
     func increaseStock(_ medicine: Medicine, user: String, completion: ((Int) -> Void)? = nil) {
         updateStock(medicine, by: 1, user: user, completion: completion)
     }
-
+    
     func decreaseStock(_ medicine: Medicine, user: String, completion: ((Int) -> Void)? = nil) {
         updateStock(medicine, by: -1, user: user, completion: completion)
     }
-
+    
     
     private func updateStock(_ medicine: Medicine, by amount: Int, user: String, completion: ((Int) -> Void)? = nil) {
         guard let id = medicine.id else { return }
         let newStock = medicine.stock + amount
-
+        isUpdatingMedicine = true
+        
         DispatchQueue.global(qos: .userInitiated).async {
             self.db.collection("medicines").document(id).updateData([
                 "stock": newStock
             ]) { error in
                 DispatchQueue.main.async {
+                    self.isUpdatingMedicine = false
                     if let error = error {
                         print("Error updating stock: \(error)")
                         self.errorMessage = "Failed to update stock. Please try again."
@@ -211,23 +214,34 @@ class MedicineStockViewModel: ObservableObject {
             }
         }
     }
-
+    
     func updateMedicine(_ medicine: Medicine, user: String) {
         guard let id = medicine.id else { return }
+        isUpdatingMedicine = true
         
         DispatchQueue.global(qos: .userInitiated).async {
             do {
-                try self.db.collection("medicines").document(id).setData(from: medicine)
-                self.addHistory(action: "Updated \(medicine.name)", user: user, medicineId: id, details: "Updated medicine details")
+                try self.db.collection("medicines").document(id).setData(from: medicine) { error in
+                    DispatchQueue.main.async {
+                        self.isUpdatingMedicine = false
+                        if let error = error {
+                            print("Error updating document: \(error)")
+                            self.errorMessage = "Failed to update medicine. Please try again."
+                        } else {
+                            self.addHistory(action: "Updated \(medicine.name)", user: user, medicineId: id, details: "Updated medicine details")
+                        }
+                    }
+                }
             } catch let error {
                 DispatchQueue.main.async {
+                    self.isUpdatingMedicine = false
                     print("Error updating document: \(error)")
                     self.errorMessage = "Failed to update medicine. Please try again."
                 }
             }
         }
     }
-
+    
     private func addHistory(action: String, user: String, medicineId: String, details: String) {
         let history = HistoryEntry(medicineId: medicineId, user: user, action: action, details: details)
         
@@ -239,10 +253,10 @@ class MedicineStockViewModel: ObservableObject {
             }
         }
     }
-
+    
     func fetchHistory(for medicine: Medicine) {
         guard let medicineId = medicine.id else { return }
-
+        
         db.collection("history")
             .whereField("medicineId", isEqualTo: medicineId)
             .order(by: "timestamp", descending: true)

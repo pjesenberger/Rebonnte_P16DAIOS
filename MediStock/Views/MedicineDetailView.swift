@@ -10,30 +10,22 @@ struct MedicineDetailView: View {
     
     var body: some View {
         ZStack {
-            if viewModel.isDeletingMedicine {
+            if viewModel.isDeletingMedicine || viewModel.isUpdatingMedicine {
                 VStack(spacing: 20) {
-                    ProgressView("Deleting medicine...")
+                    ProgressView(viewModel.isDeletingMedicine ? "Deleting medicine..." : "Updating medicine...")
                     Text("Please wait...")
                         .foregroundColor(.gray)
                 }
             } else {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
-                        // Title
                         Label(medicine.name, systemImage: "pill.fill")
                             .font(.largeTitle)
                             .padding(.top, 20)
                         
-                        // Medicine Name
                         medicineNameSection
-                        
-                        // Medicine Stock
                         medicineStockSection
-                        
-                        // Medicine Aisle
                         medicineAisleSection
-                        
-                        // History Section
                         historySection
                     }
                     .padding()
@@ -46,7 +38,7 @@ struct MedicineDetailView: View {
                 SymbolButton(systemName: "trash", color: .red, font: .body) {
                     showDeleteAlert = true
                 }
-                .disabled(viewModel.isDeletingMedicine)
+                .disabled(viewModel.isDeletingMedicine || viewModel.isUpdatingMedicine)
             }
         }
         .deleteConfirmation(
@@ -82,9 +74,6 @@ struct MedicineDetailView: View {
             viewModel.fetchHistory(for: medicine)
             viewModel.listenToMedicine(id: medicine.id!)
         }
-        .onChange(of: medicine) { oldValue, newValue in
-            viewModel.updateMedicine(medicine, user: session.session?.uid ?? "")
-        }
     }
 }
 
@@ -93,10 +82,19 @@ extension MedicineDetailView {
         VStack(alignment: .leading) {
             Text("Name")
                 .font(.headline)
-            TextField("Name", text: $medicine.name, onCommit: {
-                viewModel.updateMedicine(medicine, user: session.session?.uid ?? "")
-            })
-            .customTextField()
+            HStack {
+                TextField("Name", text: $medicine.name)
+                    .customTextField()
+                    .disabled(viewModel.isUpdatingMedicine)
+                    .submitLabel(.done)
+                    .onSubmit {
+                        viewModel.updateMedicine(medicine, user: session.session?.uid ?? "")
+                    }
+                if viewModel.isUpdatingMedicine {
+                    ProgressView()
+                        .scaleEffect(0.7)
+                }
+            }
         }
     }
     
@@ -106,18 +104,27 @@ extension MedicineDetailView {
                 .font(.headline)
             
             HStack {
-                TextField("Stock", value: $medicine.stock, formatter: NumberFormatter(), onCommit: {
-                    viewModel.updateMedicine(medicine, user: session.session?.uid ?? "")
-                })
-                .customTextField()
+                TextField("Stock", value: $medicine.stock, formatter: NumberFormatter())
+                    .customTextField()
+                    .disabled(viewModel.isUpdatingMedicine)
+                    .submitLabel(.done)
+                    .onSubmit {
+                        viewModel.updateMedicine(medicine, user: session.session?.uid ?? "")
+                    }
+                if viewModel.isUpdatingMedicine {
+                    ProgressView()
+                        .scaleEffect(0.7)
+                }
                 
                 SymbolButton(systemName: "plus.square", color: .green, font: .title) {
                     viewModel.increaseStock(medicine, user: session.session?.uid ?? "")
                 }
+                .disabled(viewModel.isUpdatingMedicine)
                 
                 SymbolButton(systemName: "minus.square", color: .red, font: .title) {
                     viewModel.decreaseStock(medicine, user: session.session?.uid ?? "")
                 }
+                .disabled(viewModel.isUpdatingMedicine)
             }
         }
     }
@@ -126,10 +133,19 @@ extension MedicineDetailView {
         VStack(alignment: .leading) {
             Text("Aisle")
                 .font(.headline)
-            TextField("Aisle", text: $medicine.aisle, onCommit: {
-                viewModel.updateMedicine(medicine, user: session.session?.uid ?? "")
-            })
-            .customTextField()
+            HStack {
+                TextField("Aisle", text: $medicine.aisle)
+                    .customTextField()
+                    .disabled(viewModel.isUpdatingMedicine)
+                    .submitLabel(.done)
+                    .onSubmit {
+                        viewModel.updateMedicine(medicine, user: session.session?.uid ?? "")
+                    }
+                if viewModel.isUpdatingMedicine {
+                    ProgressView()
+                        .scaleEffect(0.7)
+                }
+            }
         }
     }
     
@@ -180,10 +196,11 @@ extension MedicineDetailView {
     }
 }
 
-/*struct MedicineDetailView_Previews: PreviewProvider {
+struct MedicineDetailView_Previews: PreviewProvider {
     static var previews: some View {
-        let sampleMedicine = Medicine(name: "Sample", stock: 10, aisle: "Aisle 1")
+        let sampleMedicine = Medicine(id: "1", name: "Paracetamol", stock: 10, aisle: "A1")
         let sampleViewModel = MedicineStockViewModel()
-        MedicineDetailView(medicine: sampleMedicine, viewModel: sampleViewModel).environmentObject(SessionStore())
+        MedicineDetailView(medicine: .constant(sampleMedicine), viewModel: sampleViewModel)
+            .environmentObject(SessionStore())
     }
-}*/
+}
