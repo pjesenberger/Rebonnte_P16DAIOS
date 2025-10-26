@@ -196,6 +196,20 @@ extension MedicineDetailView {
                     .background(Color(.systemGray6))
                     .cornerRadius(10)
                     .padding(.bottom, 5)
+                    .onAppear {
+                        if entry.id == filteredHistory.last?.id {
+                            viewModel.loadMoreHistory(for: medicine)
+                        }
+                    }
+                }
+                
+                if viewModel.isLoadingMoreHistory {
+                    HStack {
+                        Spacer()
+                        ProgressView()
+                        Spacer()
+                    }
+                    .padding()
                 }
             }
         }

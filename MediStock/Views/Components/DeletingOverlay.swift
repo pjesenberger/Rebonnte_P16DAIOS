@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-import SwiftUI
-
 struct DeletingOverlay: View {
     let isDeleting: Bool
     

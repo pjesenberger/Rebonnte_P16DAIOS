@@ -53,11 +53,24 @@ struct AllMedicinesView: View {
                                     }
                                 }
                                 .disabledWhileDeleting(viewModel.isDeletingMedicine)
+                                .onAppear {
+                                    if medicine.id == filteredAndSortedMedicines.last?.id {
+                                        viewModel.loadMoreMedicines(sortedBy: sortOption)
+                                    }
+                                }
                             }
                             .onDelete { indexSet in
                                 if let index = indexSet.first {
                                     medicineToDelete = filteredAndSortedMedicines[index]
                                     showDeleteAlert = true
+                                }
+                            }
+                            
+                            if viewModel.isLoadingMore {
+                                HStack {
+                                    Spacer()
+                                    ProgressView()
+                                    Spacer()
                                 }
                             }
                             

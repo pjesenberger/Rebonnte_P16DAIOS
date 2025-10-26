@@ -2,21 +2,40 @@ import Foundation
 import Firebase
 
 class MedicineStockViewModel: ObservableObject {
+    // Data arrays
     @Published var medicines: [Medicine] = []
     @Published var aisles: [String] = []
     @Published var history: [HistoryEntry] = []
+    
+    // Loading and error states
     @Published var isLoading = false
     @Published var errorMessage: String?
     @Published var isDeletingMedicine = false
     @Published var isUpdatingMedicine = false
     
+    // Lazy Loading of Medicines
+    @Published var isLoadingMore = false
+    @Published var hasMoreMedicines = true
+    private var lastDocument: DocumentSnapshot?
+    private let pageSize = 20
+    
+    // Lazy Loading of History
+    @Published var isLoadingMoreHistory = false
+    @Published var hasMoreHistory = true
+    private var lastHistoryDocument: DocumentSnapshot?
+    private let historyPageSize = 10
+    
     private var db = Firestore.firestore()
+    
+    // MARK: - Medicines funcs
     
     func fetchMedicines(sortedBy sortOption: SortOption = .none) {
         isLoading = true
         errorMessage = nil
+        lastDocument = nil
+        hasMoreMedicines = true
         
-        var query: Query = db.collection("medicines")
+        var query: Query = db.collection("medicines").limit(to: pageSize)
         
         switch sortOption {
         case .name:
@@ -27,7 +46,7 @@ class MedicineStockViewModel: ObservableObject {
             break
         }
         
-        query.addSnapshotListener { (querySnapshot, error) in
+        query.getDocuments { (querySnapshot, error) in
             self.isLoading = false
             
             if let error = error {
@@ -37,27 +56,45 @@ class MedicineStockViewModel: ObservableObject {
                 self.medicines = querySnapshot?.documents.compactMap { document in
                     try? document.data(as: Medicine.self)
                 } ?? []
+                
+                self.lastDocument = querySnapshot?.documents.last
+                self.hasMoreMedicines = (querySnapshot?.documents.count ?? 0) >= self.pageSize
                 self.errorMessage = nil
             }
         }
     }
     
-    func fetchAisles() {
-        isLoading = true
-        errorMessage = nil
+    func loadMoreMedicines(sortedBy sortOption: SortOption = .none) {
+        guard !isLoadingMore && hasMoreMedicines, let lastDocument = lastDocument else { return }
         
-        db.collection("medicines").addSnapshotListener { (querySnapshot, error) in
-            self.isLoading = false
+        isLoadingMore = true
+        
+        var query: Query = db.collection("medicines").limit(to: pageSize)
+        
+        switch sortOption {
+        case .name:
+            query = query.order(by: "name", descending: false)
+        case .stock:
+            query = query.order(by: "stock", descending: false)
+        case .none:
+            break
+        }
+        
+        query = query.start(afterDocument: lastDocument)
+        
+        query.getDocuments { (querySnapshot, error) in
+            self.isLoadingMore = false
             
             if let error = error {
-                print("Error getting documents: \(error)")
-                self.errorMessage = "Failed to load aisles. Please try again."
+                print("Error loading more documents: \(error)")
             } else {
-                let allMedicines = querySnapshot?.documents.compactMap { document in
+                let newMedicines = querySnapshot?.documents.compactMap { document in
                     try? document.data(as: Medicine.self)
                 } ?? []
-                self.aisles = Array(Set(allMedicines.map { $0.aisle })).sorted()
-                self.errorMessage = nil
+                
+                self.medicines.append(contentsOf: newMedicines)
+                self.lastDocument = querySnapshot?.documents.last
+                self.hasMoreMedicines = (querySnapshot?.documents.count ?? 0) >= self.pageSize
             }
         }
     }
@@ -117,6 +154,7 @@ class MedicineStockViewModel: ObservableObject {
         }
     }
     
+    // Unused func
     func addRandomMedicine(user: String) {
         let medicine = Medicine(name: "Medicine \(Int.random(in: 1...100))", stock: Int.random(in: 1...100), aisle: "Aisle \(Int.random(in: 1...10))")
         
@@ -128,20 +166,6 @@ class MedicineStockViewModel: ObservableObject {
                 DispatchQueue.main.async {
                     print("Error adding document: \(error)")
                     self.errorMessage = "Failed to add medicine. Please try again."
-                }
-            }
-        }
-    }
-    
-    func deleteMedicines(at offsets: IndexSet) {
-        DispatchQueue.global(qos: .userInitiated).async {
-            offsets.map { self.medicines[$0] }.forEach { medicine in
-                if let id = medicine.id {
-                    self.db.collection("medicines").document(id).delete { error in
-                        if let error = error {
-                            print("Error removing document: \(error)")
-                        }
-                    }
                 }
             }
         }
@@ -174,6 +198,46 @@ class MedicineStockViewModel: ObservableObject {
             }
         }
     }
+    
+    func deleteMedicines(at offsets: IndexSet) {
+        DispatchQueue.global(qos: .userInitiated).async {
+            offsets.map { self.medicines[$0] }.forEach { medicine in
+                if let id = medicine.id {
+                    self.db.collection("medicines").document(id).delete { error in
+                        if let error = error {
+                            print("Error removing document: \(error)")
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func retry() {
+        fetchMedicines()
+    }
+    
+    func fetchAisles() {
+        isLoading = true
+        errorMessage = nil
+        
+        db.collection("medicines").addSnapshotListener { (querySnapshot, error) in
+            self.isLoading = false
+            
+            if let error = error {
+                print("Error getting documents: \(error)")
+                self.errorMessage = "Failed to load aisles. Please try again."
+            } else {
+                let allMedicines = querySnapshot?.documents.compactMap { document in
+                    try? document.data(as: Medicine.self)
+                } ?? []
+                self.aisles = Array(Set(allMedicines.map { $0.aisle })).sorted()
+                self.errorMessage = nil
+            }
+        }
+    }
+    
+    // MARK: - Medicine Updates funcs
     
     func increaseStock(_ medicine: Medicine, user: String, completion: ((Int) -> Void)? = nil) {
         updateStock(medicine, by: 1, user: user, completion: completion)
@@ -242,6 +306,8 @@ class MedicineStockViewModel: ObservableObject {
         }
     }
     
+    // MARK: - History funcs
+    
     private func addHistory(action: String, user: String, medicineId: String, details: String) {
         let history = HistoryEntry(medicineId: medicineId, user: user, action: action, details: details)
         
@@ -257,10 +323,14 @@ class MedicineStockViewModel: ObservableObject {
     func fetchHistory(for medicine: Medicine) {
         guard let medicineId = medicine.id else { return }
         
+        lastHistoryDocument = nil
+        hasMoreHistory = true
+        
         db.collection("history")
             .whereField("medicineId", isEqualTo: medicineId)
             .order(by: "timestamp", descending: true)
-            .addSnapshotListener { (querySnapshot, error) in
+            .limit(to: historyPageSize)
+            .getDocuments { (querySnapshot, error) in
                 if let error = error {
                     print("Error getting history: \(error)")
                     self.errorMessage = "Failed to load history. Please try again."
@@ -268,12 +338,40 @@ class MedicineStockViewModel: ObservableObject {
                     self.history = querySnapshot?.documents.compactMap { document in
                         try? document.data(as: HistoryEntry.self)
                     } ?? []
+                    
+                    self.lastHistoryDocument = querySnapshot?.documents.last
+                    self.hasMoreHistory = (querySnapshot?.documents.count ?? 0) >= self.historyPageSize
                     self.errorMessage = nil
                 }
             }
     }
     
-    func retry() {
-        fetchMedicines()
+    func loadMoreHistory(for medicine: Medicine) {
+        guard !isLoadingMoreHistory && hasMoreHistory,
+              let medicineId = medicine.id,
+              let lastDocument = lastHistoryDocument else { return }
+        
+        isLoadingMoreHistory = true
+        
+        db.collection("history")
+            .whereField("medicineId", isEqualTo: medicineId)
+            .order(by: "timestamp", descending: true)
+            .start(afterDocument: lastDocument)
+            .limit(to: historyPageSize)
+            .getDocuments { (querySnapshot, error) in
+                self.isLoadingMoreHistory = false
+                
+                if let error = error {
+                    print("Error loading more history: \(error)")
+                } else {
+                    let newHistory = querySnapshot?.documents.compactMap { document in
+                        try? document.data(as: HistoryEntry.self)
+                    } ?? []
+                    
+                    self.history.append(contentsOf: newHistory)
+                    self.lastHistoryDocument = querySnapshot?.documents.last
+                    self.hasMoreHistory = (querySnapshot?.documents.count ?? 0) >= self.historyPageSize
+                }
+            }
     }
 }

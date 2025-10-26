@@ -27,12 +27,26 @@ struct MedicineListView: View {
                             }
                         }
                         .disabledWhileDeleting(viewModel.isDeletingMedicine)
+                        .onAppear {
+                            let filtered = viewModel.medicines.filter { $0.aisle == aisle }
+                            if medicine.id == filtered.last?.id {
+                                viewModel.loadMoreMedicines()
+                            }
+                        }
                     }
                     .onDelete { indexSet in
                         let filtered = viewModel.medicines.filter { $0.aisle == aisle }
                         if let index = indexSet.first {
                             medicineToDelete = filtered[index]
                             showDeleteAlert = true
+                        }
+                    }
+                    
+                    if viewModel.isLoadingMore {
+                        HStack {
+                            Spacer()
+                            ProgressView()
+                            Spacer()
                         }
                     }
                     
