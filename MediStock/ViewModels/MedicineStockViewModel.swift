@@ -228,16 +228,21 @@ class MedicineStockViewModel: ObservableObject {
 
     func fetchHistory(for medicine: Medicine) {
         guard let medicineId = medicine.id else { return }
-        db.collection("history").whereField("medicineId", isEqualTo: medicineId).addSnapshotListener { (querySnapshot, error) in
-            if let error = error {
-                print("Error getting history: \(error)")
-                self.errorMessage = "Failed to load history. Please try again."
-            } else {
-                self.history = querySnapshot?.documents.compactMap { document in
-                    try? document.data(as: HistoryEntry.self)
-                } ?? []
+
+        db.collection("history")
+            .whereField("medicineId", isEqualTo: medicineId)
+            .order(by: "timestamp", descending: true)
+            .addSnapshotListener { (querySnapshot, error) in
+                if let error = error {
+                    print("Error getting history: \(error)")
+                    self.errorMessage = "Failed to load history. Please try again."
+                } else {
+                    self.history = querySnapshot?.documents.compactMap { document in
+                        try? document.data(as: HistoryEntry.self)
+                    } ?? []
+                    self.errorMessage = nil
+                }
             }
-        }
     }
     
     func retry() {
