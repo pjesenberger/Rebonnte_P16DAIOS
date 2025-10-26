@@ -375,3 +375,19 @@ class MedicineStockViewModel: ObservableObject {
             }
     }
 }
+
+// MARK: - Local testing helpers
+extension MedicineStockViewModel {
+    func addMedicineLocally(_ medicine: Medicine) {
+        var newMedicine = medicine
+        if newMedicine.id == nil {
+            newMedicine.id = UUID().uuidString
+        }
+        medicines.append(newMedicine)
+    }
+
+    func deleteMedicineLocally(_ medicine: Medicine) {
+        guard let id = medicine.id else { return }
+        medicines.removeAll { $0.id == id }
+    }
+}

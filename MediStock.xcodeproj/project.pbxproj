@@ -11,7 +11,7 @@
 		53E0D8992C06084700DE1134 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8982C06084700DE1134 /* ContentView.swift */; };
 		53E0D89B2C06084900DE1134 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 53E0D89A2C06084900DE1134 /* Assets.xcassets */; };
 		53E0D89E2C06084900DE1134 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 53E0D89D2C06084900DE1134 /* Preview Assets.xcassets */; };
-		53E0D8A82C06084900DE1134 /* MediStockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8A72C06084900DE1134 /* MediStockTests.swift */; };
+		53E0D8A82C06084900DE1134 /* AddMedicineViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8A72C06084900DE1134 /* AddMedicineViewModelTests.swift */; };
 		53E0D8B22C06084900DE1134 /* MediStockUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8B12C06084900DE1134 /* MediStockUITests.swift */; };
 		53E0D8B42C06084900DE1134 /* MediStockUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8B32C06084900DE1134 /* MediStockUITestsLaunchTests.swift */; };
 		53E0D8C22C06092E00DE1134 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 53E0D8C12C06092E00DE1134 /* FirebaseAnalytics */; };
@@ -50,6 +50,8 @@
 		C67B37AC2E9AA7580019CDD1 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = C67B37AB2E9AA7580019CDD1 /* User.swift */; };
 		C69EF1F22E91F9B7001C28AF /* CustomTextFieldStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C69EF1F12E91F9B7001C28AF /* CustomTextFieldStyle.swift */; };
 		C69EF1F42E920469001C28AF /* HistoryField.swift in Sources */ = {isa = PBXBuildFile; fileRef = C69EF1F32E920469001C28AF /* HistoryField.swift */; };
+		C6B1077B2EAEBB4C005D423A /* AuthenticationViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6B1077A2EAEBB4C005D423A /* AuthenticationViewModelTests.swift */; };
+		C6B1077D2EAEBB4F005D423A /* MedicineStockViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6B1077C2EAEBB4F005D423A /* MedicineStockViewModelTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,7 +78,7 @@
 		53E0D89A2C06084900DE1134 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		53E0D89D2C06084900DE1134 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		53E0D8A32C06084900DE1134 /* MediStockTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MediStockTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		53E0D8A72C06084900DE1134 /* MediStockTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediStockTests.swift; sourceTree = "<group>"; };
+		53E0D8A72C06084900DE1134 /* AddMedicineViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMedicineViewModelTests.swift; sourceTree = "<group>"; };
 		53E0D8AD2C06084900DE1134 /* MediStockUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MediStockUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		53E0D8B12C06084900DE1134 /* MediStockUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediStockUITests.swift; sourceTree = "<group>"; };
 		53E0D8B32C06084900DE1134 /* MediStockUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediStockUITestsLaunchTests.swift; sourceTree = "<group>"; };
@@ -105,6 +107,8 @@
 		C67B37AB2E9AA7580019CDD1 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		C69EF1F12E91F9B7001C28AF /* CustomTextFieldStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextFieldStyle.swift; sourceTree = "<group>"; };
 		C69EF1F32E920469001C28AF /* HistoryField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryField.swift; sourceTree = "<group>"; };
+		C6B1077A2EAEBB4C005D423A /* AuthenticationViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationViewModelTests.swift; sourceTree = "<group>"; };
+		C6B1077C2EAEBB4F005D423A /* MedicineStockViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicineStockViewModelTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -189,7 +193,9 @@
 		53E0D8A62C06084900DE1134 /* MediStockTests */ = {
 			isa = PBXGroup;
 			children = (
-				53E0D8A72C06084900DE1134 /* MediStockTests.swift */,
+				53E0D8A72C06084900DE1134 /* AddMedicineViewModelTests.swift */,
+				C6B1077A2EAEBB4C005D423A /* AuthenticationViewModelTests.swift */,
+				C6B1077C2EAEBB4F005D423A /* MedicineStockViewModelTests.swift */,
 			);
 			path = MediStockTests;
 			sourceTree = "<group>";
@@ -476,7 +482,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				53E0D8A82C06084900DE1134 /* MediStockTests.swift in Sources */,
+				C6B1077D2EAEBB4F005D423A /* MedicineStockViewModelTests.swift in Sources */,
+				53E0D8A82C06084900DE1134 /* AddMedicineViewModelTests.swift in Sources */,
+				C6B1077B2EAEBB4C005D423A /* AuthenticationViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
