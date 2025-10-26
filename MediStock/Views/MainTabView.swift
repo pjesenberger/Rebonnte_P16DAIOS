@@ -1,16 +1,17 @@
 import SwiftUI
 
 struct MainTabView: View {
+    @StateObject var medicineStockViewModel = MedicineStockViewModel()
     
     var body: some View {
         TabView {
-            AisleListView()
+            AisleListView(viewModel: medicineStockViewModel)
                 .tabItem {
                     Image(systemName: "list.dash")
                     Text("Aisles")
                 }
 
-            AllMedicinesView()
+            AllMedicinesView(viewModel: medicineStockViewModel)
                 .tabItem {
                     Image(systemName: "pills.fill")
                     Text("All Medicines")

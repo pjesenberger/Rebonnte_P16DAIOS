@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct AllMedicinesView: View {
-    @ObservedObject var viewModel = MedicineStockViewModel()
+    @ObservedObject var viewModel: MedicineStockViewModel
     @State private var filterText: String = ""
     @State private var sortOption: SortOption = .none
     @State private var showDeleteAlert = false
@@ -139,6 +139,6 @@ enum SortOption: String, CaseIterable, Identifiable {
 
 struct AllMedicinesView_Previews: PreviewProvider {
     static var previews: some View {
-        AllMedicinesView()
+        AllMedicinesView(viewModel: MedicineStockViewModel())
     }
 }

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct AisleListView: View {
-    @ObservedObject var viewModel = MedicineStockViewModel()
+    @ObservedObject var viewModel: MedicineStockViewModel
     @State private var showingAddMedicine = false
     @EnvironmentObject var session: SessionStore
 
@@ -17,7 +17,7 @@ struct AisleListView: View {
                 } else {
                     List {
                         ForEach(viewModel.aisles, id: \.self) { aisle in
-                            NavigationLink(destination: MedicineListView(aisle: aisle)) {
+                            NavigationLink(destination: MedicineListView(viewModel: viewModel, aisle: aisle)) {
                                 Text(aisle)
                             }
                         }
@@ -52,6 +52,6 @@ struct AisleListView: View {
 
 struct AisleListView_Previews: PreviewProvider {
     static var previews: some View {
-        AisleListView()
+        AisleListView(viewModel: MedicineStockViewModel())
     }
 }

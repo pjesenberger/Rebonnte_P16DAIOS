@@ -2,7 +2,7 @@ import SwiftUI
 
 struct MedicineDetailView: View {
     @State var medicine: Medicine
-    @ObservedObject var viewModel = MedicineStockViewModel()
+    @ObservedObject var viewModel: MedicineStockViewModel
     @EnvironmentObject var session: SessionStore
     @State private var showDeleteAlert = false
     @State private var showDeleteError = false
