@@ -61,6 +61,20 @@ class MedicineStockViewModel: ObservableObject {
         }
     }
     
+    func listenToMedicine(id: String) {
+        db.collection("medicines").document(id).addSnapshotListener { documentSnapshot, error in
+            if let document = documentSnapshot {
+                if let updatedMedicine = try? document.data(as: Medicine.self) {
+                    DispatchQueue.main.async {
+                        if let index = self.medicines.firstIndex(where: { $0.id == id }) {
+                            self.medicines[index] = updatedMedicine
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
     func addMedicine(_ medicine: Medicine, user: String, completion: ((Bool) -> Void)? = nil) {
         isLoading = true
         errorMessage = nil

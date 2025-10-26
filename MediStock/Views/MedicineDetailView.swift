@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct MedicineDetailView: View {
-    @State var medicine: Medicine
+    @Binding var medicine: Medicine
     @ObservedObject var viewModel: MedicineStockViewModel
     @EnvironmentObject var session: SessionStore
     @State private var showDeleteAlert = false
@@ -80,6 +80,7 @@ struct MedicineDetailView: View {
         )
         .onAppear {
             viewModel.fetchHistory(for: medicine)
+            viewModel.listenToMedicine(id: medicine.id!)
         }
         .onChange(of: medicine) { oldValue, newValue in
             viewModel.updateMedicine(medicine, user: session.session?.uid ?? "")
@@ -179,10 +180,10 @@ extension MedicineDetailView {
     }
 }
 
-struct MedicineDetailView_Previews: PreviewProvider {
+/*struct MedicineDetailView_Previews: PreviewProvider {
     static var previews: some View {
         let sampleMedicine = Medicine(name: "Sample", stock: 10, aisle: "Aisle 1")
         let sampleViewModel = MedicineStockViewModel()
         MedicineDetailView(medicine: sampleMedicine, viewModel: sampleViewModel).environmentObject(SessionStore())
     }
-}
+}*/

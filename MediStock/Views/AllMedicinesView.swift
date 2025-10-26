@@ -42,8 +42,10 @@ struct AllMedicinesView: View {
                     } else {
                         // Liste des Médicaments
                         List {
-                            ForEach(filteredAndSortedMedicines, id: \.id) { medicine in
-                                NavigationLink(destination: MedicineDetailView(medicine: medicine, viewModel: viewModel)) {
+                            ForEach($viewModel.medicines.filter { med in
+                                (filterText.isEmpty || med.wrappedValue.name.lowercased().contains(filterText.lowercased()))
+                            }, id: \.wrappedValue.id) { $medicine in
+                                NavigationLink(destination: MedicineDetailView(medicine: $medicine, viewModel: viewModel)) {
                                     VStack(alignment: .leading) {
                                         Text(medicine.name)
                                             .font(.headline)
