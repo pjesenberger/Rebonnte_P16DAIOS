@@ -211,10 +211,7 @@
 				53E0D8D72C06097900DE1134 /* LoginView.swift */,
 				53E0D8EB2C06717200DE1134 /* MainTabView.swift */,
 				53E0D8E52C066F4100DE1134 /* AisleListView.swift */,
-				C678A4A62EA043FD0038A92A /* AddMedicineView.swift */,
-				53E0D8D92C06098F00DE1134 /* MedicineListView.swift */,
-				53E0D8E72C066F6500DE1134 /* MedicineDetailView.swift */,
-				53E0D8ED2C06718100DE1134 /* AllMedicinesView.swift */,
+				C6B107792EAE7F76005D423A /* MedicineViews */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -286,6 +283,17 @@
 				C678A4962E9EBE970038A92A /* DeletingOverlay.swift */,
 			);
 			path = Components;
+			sourceTree = "<group>";
+		};
+		C6B107792EAE7F76005D423A /* MedicineViews */ = {
+			isa = PBXGroup;
+			children = (
+				53E0D8ED2C06718100DE1134 /* AllMedicinesView.swift */,
+				53E0D8D92C06098F00DE1134 /* MedicineListView.swift */,
+				53E0D8E72C066F6500DE1134 /* MedicineDetailView.swift */,
+				C678A4A62EA043FD0038A92A /* AddMedicineView.swift */,
+			);
+			path = MedicineViews;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

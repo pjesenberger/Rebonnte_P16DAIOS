@@ -19,10 +19,15 @@ struct MedicineDetailView: View {
             } else {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
-                        Label(medicine.name, systemImage: "pill.fill")
-                            .font(.largeTitle)
-                            .padding(.top, 20)
-                            .foregroundColor(.green)
+                        Label {
+                            Text(medicine.name)
+                                .foregroundColor(.white)
+                        } icon: {
+                            Image(systemName: "pill.fill")
+                                .foregroundColor(.green)
+                        }
+                        .font(.largeTitle)
+                        .padding(.top, 20)
                         
                         medicineNameSection
                         medicineStockSection
