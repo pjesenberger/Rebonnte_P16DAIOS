@@ -30,11 +30,15 @@ struct AllMedicinesView: View {
                 // Content avec gestion du loading et des erreurs
                 ZStack {
                     if viewModel.isLoading && viewModel.medicines.isEmpty {
+                        Spacer()
                         LoadingStateView(message: "Loading medicines...")
+                        Spacer()
                     } else if let errorMessage = viewModel.errorMessage, viewModel.medicines.isEmpty {
+                        Spacer()
                         ErrorStateView(errorMessage: errorMessage) {
                             viewModel.retry()
                         }
+                        Spacer()
                     } else {
                         // Liste des Médicaments
                         List {

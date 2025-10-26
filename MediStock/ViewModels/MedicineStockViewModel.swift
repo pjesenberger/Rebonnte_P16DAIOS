@@ -160,18 +160,19 @@ class MedicineStockViewModel: ObservableObject {
         }
     }
 
-    func increaseStock(_ medicine: Medicine, user: String) {
-        updateStock(medicine, by: 1, user: user)
+    func increaseStock(_ medicine: Medicine, user: String, completion: ((Int) -> Void)? = nil) {
+        updateStock(medicine, by: 1, user: user, completion: completion)
     }
 
-    func decreaseStock(_ medicine: Medicine, user: String) {
-        updateStock(medicine, by: -1, user: user)
+    func decreaseStock(_ medicine: Medicine, user: String, completion: ((Int) -> Void)? = nil) {
+        updateStock(medicine, by: -1, user: user, completion: completion)
     }
 
-    private func updateStock(_ medicine: Medicine, by amount: Int, user: String) {
+    
+    private func updateStock(_ medicine: Medicine, by amount: Int, user: String, completion: ((Int) -> Void)? = nil) {
         guard let id = medicine.id else { return }
         let newStock = medicine.stock + amount
-        
+
         DispatchQueue.global(qos: .userInitiated).async {
             self.db.collection("medicines").document(id).updateData([
                 "stock": newStock
@@ -183,6 +184,7 @@ class MedicineStockViewModel: ObservableObject {
                     } else {
                         if let index = self.medicines.firstIndex(where: { $0.id == id }) {
                             self.medicines[index].stock = newStock
+                            completion?(newStock)
                         }
                         self.addHistory(
                             action: "\(amount > 0 ? "Increased" : "Decreased") stock of \(medicine.name) by \(abs(amount))",
