@@ -21,6 +21,16 @@ jobs:
       - name: List Available Simulators
         run: xcrun simctl list devices available
       
+      - name: Get Available Simulator
+        id: simulator
+        run: |
+          # Trouve le premier iPhone disponible et extrait son UUID
+          SIMULATOR_INFO=$(xcrun simctl list devices available iPhone | grep "iPhone" | head -1)
+          echo "Found simulator: $SIMULATOR_INFO"
+          UDID=$(echo "$SIMULATOR_INFO" | grep -o '[A-F0-9]\{8\}-[A-F0-9]\{4\}-[A-F0-9]\{4\}-[A-F0-9]\{4\}-[A-F0-9]\{12\}')
+          echo "udid=$UDID" >> $GITHUB_OUTPUT
+          echo "Using simulator UDID: $UDID"
+      
       - name: Create Mock GoogleService-Info.plist
         run: |
           cat > MediStock/GoogleService-Info.plist << EOF
@@ -69,17 +79,15 @@ jobs:
           xcodebuild build-for-testing \
           -scheme "MediStock" \
           -project "MediStock.xcodeproj" \
-          -destination "platform=iOS Simulator,name=iPhone 16,OS=18.0" \
-          | xcpretty && exit ${PIPESTATUS[0]}
+          -destination "platform=iOS Simulator,id=${{ steps.simulator.outputs.udid }}"
       
       - name: Run Unit Tests
         run: |
           xcodebuild test-without-building \
           -scheme "MediStock" \
           -project "MediStock.xcodeproj" \
-          -destination "platform=iOS Simulator,name=iPhone 16,OS=18.0" \
-          -only-testing:MediStockTests \
-          | xcpretty && exit ${PIPESTATUS[0]}
+          -destination "platform=iOS Simulator,id=${{ steps.simulator.outputs.udid }}" \
+          -only-testing:MediStockTests
       
       - name: Upload Test Results
         uses: actions/upload-artifact@v4
