@@ -6,6 +6,10 @@ class SessionStore: ObservableObject {
     var handle: AuthStateDidChangeListenerHandle?
 
     func listen() {
+        let isRunningTests = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+        
+        guard !isRunningTests else { return }
+        
         handle = Auth.auth().addStateDidChangeListener { (auth, user) in
             if let user = user {
                 self.session = User(uid: user.uid, email: user.email)

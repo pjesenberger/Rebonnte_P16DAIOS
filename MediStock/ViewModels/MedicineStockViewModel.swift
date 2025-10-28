@@ -25,7 +25,17 @@ class MedicineStockViewModel: ObservableObject {
     private var lastHistoryDocument: DocumentSnapshot?
     private let historyPageSize = 10
     
-    private var db = Firestore.firestore()
+    private var db: Firestore
+    
+    init() {
+        let isRunningTests = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+        
+        if isRunningTests {
+            self.db = Firestore.firestore()
+        } else {
+            self.db = Firestore.firestore()
+        }
+    }
     
     // MARK: - Medicines funcs
     
