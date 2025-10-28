@@ -1,11 +1,9 @@
 name: iOS CI
-
 on:
   push:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
-
 jobs:
   test:
     name: Build and Test
@@ -20,59 +18,23 @@ jobs:
         with:
           xcode-version: '15.4'
       
-      - name: Create Mock GoogleService-Info.plist
+      - name: Build and Test
         run: |
-          mkdir -p MediStock/Configurations
-          cat > MediStock/Configurations/GoogleService-Info.plist << 'EOF'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>API_KEY</key>
-            <string>AIzaSyDummyKeyForCI</string>
-            <key>GCM_SENDER_ID</key>
-            <string>123456789</string>
-            <key>BUNDLE_ID</key>
-            <string>com.rebonnte.MediStock</string>
-            <key>PROJECT_ID</key>
-            <string>medistock-test</string>
-            <key>GOOGLE_APP_ID</key>
-            <string>1:123456789:ios:abc123def456</string>
-            <key>STORAGE_BUCKET</key>
-            <string>medistock-test.appspot.com</string>
-            <key>DATABASE_URL</key>
-            <string>https://medistock-test.firebaseio.com</string>
-          </dict>
-          </plist>
-          EOF
-      
-      - name: Build for Testing
-        run: |
-          xcodebuild build-for-testing \
+          xcodebuild test \
             -project MediStock.xcodeproj \
             -scheme MediStock \
             -destination 'platform=iOS Simulator,name=iPhone 15 Pro,OS=17.5' \
-            -sdk iphonesimulator \
             -only-testing:MediStockTests \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO \
-            -derivedDataPath $PWD/DerivedData
-      
-      - name: Run Unit Tests
-        run: |
-          xcodebuild test-without-building \
-            -project MediStock.xcodeproj \
-            -scheme MediStock \
-            -destination 'platform=iOS Simulator,name=iPhone 15 Pro,OS=17.5' \
-            -sdk iphonesimulator \
-            -only-testing:MediStockTests \
-            -derivedDataPath $PWD/DerivedData
+            CODE_SIGNING_ALLOWED=NO
       
       - name: Upload Test Results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-results
-          path: DerivedData/Logs/Test/*.xcresult
+          path: |
+            ~/Library/Logs/DiagnosticReports/**
+            **/Logs/Test/*.xcresult
           retention-days: 5
