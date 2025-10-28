@@ -15,9 +15,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       
-      - name: List Available Simulators
-        run: xcrun simctl list devices available
-      
       - name: Create Mock GoogleService-Info.plist
         run: |
           cat > MediStock/GoogleService-Info.plist << EOF
@@ -55,16 +52,10 @@ jobs:
           </plist>
           EOF
       
-      - name: Resolve Swift Package Dependencies
-        run: |
-          xcodebuild -resolvePackageDependencies \
-          -scheme "MediStock" \
-          -project "MediStock.xcodeproj"
-      
-      - name: Build and Test MediStock
+      - name: Build and Test
         run: |
           xcodebuild test \
           -scheme "MediStock" \
           -project "MediStock.xcodeproj" \
-          -destination "platform=iOS Simulator,name=iPhone 15 Pro,OS=17.5" \
+          -destination "platform=iOS Simulator,name=iPhone 15 Pro" \
           -only-testing:MediStockTests
