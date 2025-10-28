@@ -8,14 +8,14 @@ on:
 
 jobs:
   test:
-    name: Build and Test
+    name: Build & Run Unit Tests
     runs-on: macos-14
 
     env:
       CI: true
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Xcode
@@ -45,7 +45,7 @@ jobs:
           </plist>
           EOF
 
-      - name: Run Unit Tests
+      - name: Build & Test Unit Tests
         run: |
           xcodebuild test \
             -scheme MediStock \
