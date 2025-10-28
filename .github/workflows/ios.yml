@@ -45,29 +45,15 @@ jobs:
           </plist>
           EOF
 
-      - name: Build only app and unit tests (exclude UI tests target)
+      - name: Run Unit Tests
         run: |
-          xcodebuild \
+          xcodebuild test \
             -scheme MediStock \
             -project MediStock.xcodeproj \
             -destination 'platform=iOS Simulator,name=iPhone 15 Pro,OS=17.5' \
+            -skip-testing:MediStockUITests \
             -sdk iphonesimulator \
-            -configuration Debug \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO \
-            -derivedDataPath $PWD/DerivedData \
-            build-for-testing \
-            -skip-package-plugin-validation \
-            -skipMacroValidation \
-            -excludeTargets MediStockUITests
-
-      - name: Run Unit Tests only
-        run: |
-          xcodebuild test-without-building \
-            -scheme MediStock \
-            -project MediStock.xcodeproj \
-            -destination 'platform=iOS Simulator,name=iPhone 15 Pro,OS=17.5' \
-            -only-testing:MediStockTests \
-            -sdk iphonesimulator \
             -derivedDataPath $PWD/DerivedData
