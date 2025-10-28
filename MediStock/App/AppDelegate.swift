@@ -10,8 +10,9 @@ import UIKit
 import Firebase
 
 class AppDelegate: NSObject, UIApplicationDelegate {
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-        if NSClassFromString("XCTestCase") == nil {
+    func application(_ application: UIApplication,
+                     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil {
             FirebaseApp.configure()
         }
         return true

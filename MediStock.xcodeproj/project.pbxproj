@@ -52,6 +52,7 @@
 		C69EF1F42E920469001C28AF /* HistoryField.swift in Sources */ = {isa = PBXBuildFile; fileRef = C69EF1F32E920469001C28AF /* HistoryField.swift */; };
 		C6B1077B2EAEBB4C005D423A /* AuthenticationViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6B1077A2EAEBB4C005D423A /* AuthenticationViewModelTests.swift */; };
 		C6B1077D2EAEBB4F005D423A /* MedicineStockViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6B1077C2EAEBB4F005D423A /* MedicineStockViewModelTests.swift */; };
+		C6B107812EB0532B005D423A /* MedicineStockViewModelTests 2.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6B107802EB0532B005D423A /* MedicineStockViewModelTests 2.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -109,6 +110,7 @@
 		C69EF1F32E920469001C28AF /* HistoryField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryField.swift; sourceTree = "<group>"; };
 		C6B1077A2EAEBB4C005D423A /* AuthenticationViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationViewModelTests.swift; sourceTree = "<group>"; };
 		C6B1077C2EAEBB4F005D423A /* MedicineStockViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicineStockViewModelTests.swift; sourceTree = "<group>"; };
+		C6B107802EB0532B005D423A /* MedicineStockViewModelTests 2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MedicineStockViewModelTests 2.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -196,6 +198,7 @@
 				53E0D8A72C06084900DE1134 /* AddMedicineViewModelTests.swift */,
 				C6B1077A2EAEBB4C005D423A /* AuthenticationViewModelTests.swift */,
 				C6B1077C2EAEBB4F005D423A /* MedicineStockViewModelTests.swift */,
+				C6B107802EB0532B005D423A /* MedicineStockViewModelTests 2.swift */,
 			);
 			path = MediStockTests;
 			sourceTree = "<group>";
@@ -483,6 +486,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C6B1077D2EAEBB4F005D423A /* MedicineStockViewModelTests.swift in Sources */,
+				C6B107812EB0532B005D423A /* MedicineStockViewModelTests 2.swift in Sources */,
 				53E0D8A82C06084900DE1134 /* AddMedicineViewModelTests.swift in Sources */,
 				C6B1077B2EAEBB4C005D423A /* AuthenticationViewModelTests.swift in Sources */,
 			);
