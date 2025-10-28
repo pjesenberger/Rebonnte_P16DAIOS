@@ -12,7 +12,9 @@ import Firebase
 class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication,
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-        if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil {
+        let isRunningTests = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
+            || CommandLine.arguments.contains("-XCTest")
+        if !isRunningTests {
             FirebaseApp.configure()
         }
         return true
