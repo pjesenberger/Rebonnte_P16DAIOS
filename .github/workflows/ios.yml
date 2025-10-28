@@ -8,14 +8,14 @@ on:
 
 jobs:
   test:
-    name: Build & Run Unit Tests
+    name: Build and Test
     runs-on: macos-14
 
     env:
       CI: true
 
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
       - name: Set up Xcode
@@ -45,13 +45,25 @@ jobs:
           </plist>
           EOF
 
-      - name: Build & Test Unit Tests
+      - name: Build App
+        run: |
+          xcodebuild build \
+            -project MediStock.xcodeproj \
+            -scheme MediStock \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'platform=iOS Simulator,name=iPhone 15 Pro,OS=17.5' \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            -derivedDataPath $PWD/DerivedData
+
+      - name: Run Unit Tests
         run: |
           xcodebuild test \
-            -scheme MediStock \
             -project MediStock.xcodeproj \
+            -scheme MediStockTests \
             -destination 'platform=iOS Simulator,name=iPhone 15 Pro,OS=17.5' \
-            -skip-testing:MediStockUITests \
             -sdk iphonesimulator \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
