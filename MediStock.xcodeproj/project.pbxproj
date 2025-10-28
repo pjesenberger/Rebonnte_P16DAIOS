@@ -71,8 +71,6 @@
 		53E0D89D2C06084900DE1134 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		53E0D8A32C06084900DE1134 /* MediStockTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MediStockTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		53E0D8A72C06084900DE1134 /* AddMedicineViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMedicineViewModelTests.swift; sourceTree = "<group>"; };
-		53E0D8B12C06084900DE1134 /* MediStockUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediStockUITests.swift; sourceTree = "<group>"; };
-		53E0D8B32C06084900DE1134 /* MediStockUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediStockUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		53E0D8D72C06097900DE1134 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		53E0D8D92C06098F00DE1134 /* MedicineListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicineListView.swift; sourceTree = "<group>"; };
 		53E0D8DB2C06099C00DE1134 /* Medicine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Medicine.swift; sourceTree = "<group>"; };
@@ -137,7 +135,6 @@
 			children = (
 				53E0D8952C06084700DE1134 /* MediStock */,
 				53E0D8A62C06084900DE1134 /* MediStockTests */,
-				53E0D8B02C06084900DE1134 /* MediStockUITests */,
 				53E0D8942C06084700DE1134 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -183,15 +180,6 @@
 				C6B107802EB0532B005D423A /* TestAppDelegate.swift */,
 			);
 			path = MediStockTests;
-			sourceTree = "<group>";
-		};
-		53E0D8B02C06084900DE1134 /* MediStockUITests */ = {
-			isa = PBXGroup;
-			children = (
-				53E0D8B12C06084900DE1134 /* MediStockUITests.swift */,
-				53E0D8B32C06084900DE1134 /* MediStockUITestsLaunchTests.swift */,
-			);
-			path = MediStockUITests;
 			sourceTree = "<group>";
 		};
 		C69EF1D32E890288001C28AF /* Views */ = {
