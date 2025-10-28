@@ -44,5 +44,7 @@ jobs:
             -project MediStock.xcodeproj \
             -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
             -only-testing:MediStockTests \
-            CODE_SIGN_IDENTITY=- \
-            CODE_SIGNING_REQUIRED=NO
+            -sdk iphonesimulator \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO
