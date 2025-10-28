@@ -45,25 +45,13 @@ jobs:
           </plist>
           EOF
 
-      - name: Build App
-        run: |
-          xcodebuild build \
-            -project MediStock.xcodeproj \
-            -scheme MediStock \
-            -configuration Debug \
-            -sdk iphonesimulator \
-            -destination 'platform=iOS Simulator,name=iPhone 15 Pro,OS=17.5' \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO \
-            -derivedDataPath $PWD/DerivedData
-
-      - name: Run Unit Tests
+      - name: Build and Run Unit Tests
         run: |
           xcodebuild test \
             -project MediStock.xcodeproj \
-            -scheme MediStockTests \
+            -scheme MediStock \
             -destination 'platform=iOS Simulator,name=iPhone 15 Pro,OS=17.5' \
+            -skip-testing:MediStockUITests \
             -sdk iphonesimulator \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
