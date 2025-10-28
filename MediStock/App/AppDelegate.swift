@@ -14,8 +14,9 @@ class AppDelegate: NSObject, UIApplicationDelegate {
                      didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         
         let isRunningTests = NSClassFromString("XCTestCase") != nil
+        let isRunningCI = ProcessInfo.processInfo.environment["DISABLE_FIREBASE"] != nil
         
-        if !isRunningTests {
+        if !isRunningTests && !isRunningCI {
             FirebaseApp.configure()
         }
         
