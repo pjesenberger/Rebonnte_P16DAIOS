@@ -10,14 +10,19 @@ jobs:
   test:
     name: Build and Test
     runs-on: macos-14
-    
+
     env:
       CI: true
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      
+
+      - name: Set up Xcode
+        uses: maxim-lobanov/setup-xcode@v3
+        with:
+          xcode-version: '15.4'
+
       - name: Create Mock GoogleService-Info.plist
         run: |
           mkdir -p MediStock/Configurations
@@ -39,7 +44,7 @@ jobs:
           </dict>
           </plist>
           EOF
-      
+
       - name: Run Unit Tests
         run: |
           xcodebuild test \
@@ -50,4 +55,5 @@ jobs:
             -sdk iphonesimulator \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
+            CODE_SIGNING_ALLOWED=NO \
+            -derivedDataPath $PWD/DerivedData
