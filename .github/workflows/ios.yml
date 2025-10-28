@@ -7,8 +7,8 @@ on:
     branches: [ "main" ]
 
 jobs:
-  build:
-    name: Build and Test MediStock
+  test:
+    name: Run Unit Tests
     runs-on: macos-14
     
     steps:
@@ -17,48 +17,32 @@ jobs:
       
       - name: Create Mock GoogleService-Info.plist
         run: |
-          cat > MediStock/GoogleService-Info.plist << EOF
+          mkdir -p MediStock
+          cat > MediStock/GoogleService-Info.plist << 'EOF'
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
           <plist version="1.0">
           <dict>
             <key>API_KEY</key>
-            <string>AIzaSyDummyKeyForCI123456789012345</string>
+            <string>AIzaSyDummyKeyForCI</string>
             <key>GCM_SENDER_ID</key>
-            <string>123456789012</string>
-            <key>PLIST_VERSION</key>
-            <string>1</string>
+            <string>123456789</string>
             <key>BUNDLE_ID</key>
             <string>com.rebonnte.MediStock</string>
             <key>PROJECT_ID</key>
-            <string>medistock-ci-test</string>
-            <key>STORAGE_BUCKET</key>
-            <string>medistock-ci-test.appspot.com</string>
-            <key>IS_ADS_ENABLED</key>
-            <false/>
-            <key>IS_ANALYTICS_ENABLED</key>
-            <false/>
-            <key>IS_APPINVITE_ENABLED</key>
-            <false/>
-            <key>IS_GCM_ENABLED</key>
-            <true/>
-            <key>IS_SIGNIN_ENABLED</key>
-            <true/>
+            <string>test</string>
             <key>GOOGLE_APP_ID</key>
-            <string>1:123456789012:ios:abcdef1234567890abcdef</string>
-            <key>DATABASE_URL</key>
-            <string>https://medistock-ci-test.firebaseio.com</string>
+            <string>1:123:ios:abc</string>
           </dict>
           </plist>
           EOF
       
-      - name: Run Unit Tests Only
+      - name: Run Tests
         run: |
           xcodebuild test \
-          -scheme "MediStock" \
-          -project "MediStock.xcodeproj" \
-          -destination "platform=iOS Simulator,name=iPhone 15 Pro" \
-          -only-testing:MediStockTests \
-          CODE_SIGNING_ALLOWED=NO \
-          CODE_SIGN_IDENTITY="" \
-          CODE_SIGNING_REQUIRED=NO
+            -scheme MediStock \
+            -project MediStock.xcodeproj \
+            -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
+            -only-testing:MediStockTests \
+            CODE_SIGN_IDENTITY=- \
+            CODE_SIGNING_REQUIRED=NO
