@@ -1,0 +1,57 @@
+name: iOS CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    name: Build and Test
+    runs-on: macos-14
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Create Mock GoogleService-Info.plist
+        run: |
+          mkdir -p MediStock/Configurations
+          cat > MediStock/Configurations/GoogleService-Info.plist << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>API_KEY</key>
+            <string>AIzaSyDummyKeyForCI</string>
+            <key>GCM_SENDER_ID</key>
+            <string>123456789</string>
+            <key>BUNDLE_ID</key>
+            <string>com.rebonnte.MediStock</string>
+            <key>PROJECT_ID</key>
+            <string>test</string>
+            <key>GOOGLE_APP_ID</key>
+            <string>1:123:ios:abc</string>
+          </dict>
+          </plist>
+          EOF
+      
+      - name: Build and Test
+        run: |
+          xcodebuild test \
+            -scheme MediStock \
+            -project MediStock.xcodeproj \
+            -destination 'platform=iOS Simulator,name=iPhone 15 Pro' \
+            -only-testing:MediStockTests \
+            -skip-testing:MediStockUITests \
+            CODE_SIGN_IDENTITY=- \
+            CODE_SIGNING_REQUIRED=NO \
+            -resultBundlePath TestResults
+      
+      - name: Upload Results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults.xcresult
