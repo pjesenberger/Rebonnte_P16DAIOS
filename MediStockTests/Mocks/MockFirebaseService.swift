@@ -30,8 +30,12 @@ class MockFirebaseService: FirebaseServiceProtocol {
     var fetchHistoryCalled = false
     
     // Firebase properties (not used in tests but required by protocol)
+    private lazy var mockFirestore: Firestore = {
+        fatalError("Should not access Firestore in tests")
+    }()
+
     var firestore: Firestore {
-        return Firestore.firestore()
+        return mockFirestore
     }
     
     var auth: Auth {
