@@ -2,65 +2,44 @@ name: iOS CI
 
 on:
   push:
-    branches: [main]
+    branches: [ main, develop ]
   pull_request:
-    branches: [main]
+    branches: [ main, develop ]
 
 jobs:
   build-and-test:
     runs-on: macos-latest
-    defaults:
-      run:
-        shell: bash
-
+    
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Ruby for CocoaPods
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: 3.2
-
-      - name: Install dependencies
-        run: |
-          sudo gem install cocoapods
-          pod install --repo-update
-
-      - name: Set Xcode version
-        run: sudo xcode-select -s /Applications/Xcode_15.4.app
-
-      - name: Clean build
-        run: |
-          xcodebuild clean \
-            -workspace MediStock.xcworkspace \
-            -scheme MediStock \
-            -configuration Debug \
-            -sdk iphonesimulator
-
-      - name: Build app and tests
-        run: |
-          xcodebuild build \
-            -workspace MediStock.xcworkspace \
-            -scheme MediStock \
-            -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.5' \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
-
-      - name: Run tests
-        run: |
-          xcodebuild test \
-            -workspace MediStock.xcworkspace \
-            -scheme MediStock \
-            -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.5' \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO \
-            -enableCodeCoverage YES
-          
-      - name: Upload test results
-        uses: actions/upload-artifact@v3
-        with:
-          name: test-results
-          path: ~/Library/Developer/Xcode/DerivedData/MediStock-*/Logs/Test
+    - name: Checkout code
+      uses: actions/checkout@v3
+    
+    - name: Select Xcode version
+      run: sudo xcode-select -switch /Applications/Xcode_15.4.app
+    
+    - name: Show Xcode version
+      run: xcodebuild -version
+    
+    - name: Setup GoogleService-Info.plist
+      env:
+        GOOGLE_SERVICES_PLIST: ${{ secrets.GOOGLE_SERVICES_PLIST }}
+      run: |
+        echo "$GOOGLE_SERVICES_PLIST" > MediStock/GoogleService-Info.plist
+    
+    - name: Build and Test
+      run: |
+        xcodebuild clean test \
+          -project MediStock.xcodeproj \
+          -scheme MediStock \
+          -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.5' \
+          -only-testing:MediStockTests \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO
+    
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v3
+      with:
+        name: test-results
+        path: TestResults/
