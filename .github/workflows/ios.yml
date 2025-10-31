@@ -12,7 +12,6 @@ jobs:
     runs-on: macos-14
     env:
       TESTING: 1
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,10 +21,31 @@ jobs:
         with:
           xcode-version: '15.4'
 
-      - name: Create GoogleService-Info.plist
+      - name: Create Mock GoogleService-Info.plist
         run: |
           mkdir -p MediStock/Configurations
-          echo "${{ secrets.GOOGLE_SERVICE_INFO_PLIST }}" | base64 --decode > MediStock/Configurations/GoogleService-Info.plist
+          cat > MediStock/Configurations/GoogleService-Info.plist << 'EOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>API_KEY</key>
+            <string>AIzaSyDummyKeyForCI</string>
+            <key>GCM_SENDER_ID</key>
+            <string>123456789</string>
+            <key>BUNDLE_ID</key>
+            <string>com.rebonnte.MediStock</string>
+            <key>PROJECT_ID</key>
+            <string>medistock-test</string>
+            <key>GOOGLE_APP_ID</key>
+            <string>1:123456789:ios:abc123def456</string>
+            <key>STORAGE_BUCKET</key>
+            <string>medistock-test.appspot.com</string>
+            <key>DATABASE_URL</key>
+            <string>https://medistock-test.firebaseio.com</string>
+          </dict>
+          </plist>
+          EOF
 
       - name: Build and Test
         run: |
@@ -36,6 +56,7 @@ jobs:
             -only-testing:MediStockTests \
             -resultBundlePath TestResults \
             CODE_SIGN_IDENTITY="" \
+            DEVELOPMENT_TEAM="" \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=NO
 
