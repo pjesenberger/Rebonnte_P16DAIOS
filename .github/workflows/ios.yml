@@ -14,9 +14,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
     
-    - name: List available Xcode versions
-      run: ls /Applications | grep Xcode
-    
     - name: Setup GoogleService-Info.plist
       env:
         GOOGLE_SERVICES_PLIST: ${{ secrets.GOOGLE_SERVICES_PLIST }}
@@ -28,7 +25,7 @@ jobs:
         xcodebuild clean test \
           -project MediStock.xcodeproj \
           -scheme MediStock \
-          -destination 'platform=iOS Simulator,name=iPhone 15' \
+          -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.4' \
           -only-testing:MediStockTests \
           CODE_SIGN_IDENTITY="" \
           CODE_SIGNING_REQUIRED=NO \
