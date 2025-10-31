@@ -26,7 +26,7 @@ jobs:
     - name: Set up Xcode
       uses: maxim-lobanov/setup-xcode@v3
       with:
-        xcode-version: '26.0.1'
+        xcode-version: '15.1'
 
     - name: Install dependencies
       run: |
