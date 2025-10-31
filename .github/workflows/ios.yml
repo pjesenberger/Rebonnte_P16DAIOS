@@ -19,31 +19,10 @@ jobs:
         with:
           xcode-version: '15.4'
 
-      - name: Create Mock GoogleService-Info.plist
+      - name: Créer GoogleService-Info.plist depuis le secret
         run: |
           mkdir -p MediStock/Configurations
-          cat > MediStock/Configurations/GoogleService-Info.plist << 'EOF'
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>API_KEY</key>
-            <string>AIzaSyDummyKeyForCI</string>
-            <key>GCM_SENDER_ID</key>
-            <string>123456789</string>
-            <key>BUNDLE_ID</key>
-            <string>com.rebonnte.MediStock</string>
-            <key>PROJECT_ID</key>
-            <string>medistock-test</string>
-            <key>GOOGLE_APP_ID</key>
-            <string>1:123456789:ios:abc123def456</string>
-            <key>STORAGE_BUCKET</key>
-            <string>medistock-test.appspot.com</string>
-            <key>DATABASE_URL</key>
-            <string>https://medistock-test.firebaseio.com</string>
-          </dict>
-          </plist>
-          EOF
+          echo "$GOOGLE_SERVICE_INFO_PLIST" | base64 --decode > MediStock/Configurations/GoogleService-Info.plist
 
       - name: Build and Test
         run: |
