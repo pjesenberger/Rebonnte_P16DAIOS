@@ -14,14 +14,6 @@ class AddMedicineViewModel: ObservableObject {
     @Published var showingAlert = false
     @Published var alertMessage = ""
 
-    var stockViewModel: MedicineStockViewModel
-    var session: SessionStore
-
-    init(stockViewModel: MedicineStockViewModel, session: SessionStore) {
-        self.stockViewModel = stockViewModel
-        self.session = session
-    }
-
     var isFormValid: Bool {
         !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty &&
         !stock.isEmpty &&
@@ -33,37 +25,34 @@ class AddMedicineViewModel: ObservableObject {
     var nameError: String? {
         guard !name.isEmpty else { return nil }
         let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmed.isEmpty {
-            return "Medicine name cannot be empty"
-        }
+        if trimmed.isEmpty { return "Medicine name cannot be empty" }
         return nil
     }
     
     var stockError: String? {
         guard !stock.isEmpty else { return nil }
         if let value = Int(stock) {
-            if value < 0 {
-                return "Stock must be a positive number"
-            }
-        } else {
-            return "Stock must be a valid number"
-        }
+            if value < 0 { return "Stock must be a positive number" }
+        } else { return "Stock must be a valid number" }
         return nil
     }
     
     var aisleError: String? {
         guard !aisle.isEmpty else { return nil }
         let trimmed = aisle.trimmingCharacters(in: .whitespacesAndNewlines)
-        if trimmed.isEmpty {
-            return "Aisle cannot be empty"
-        }
+        if trimmed.isEmpty { return "Aisle cannot be empty" }
         return nil
     }
 
-    func save(completion: @escaping (Bool) -> Void) {
+    func save(
+        stockViewModel: MedicineStockViewModel,
+        session: SessionStore,
+        completion: @escaping (Bool) -> Void
+    ) {
         guard let stockValue = Int(stock), stockValue >= 0 else {
             alertMessage = "Stock must be a positive number"
             showingAlert = true
+            completion(false)
             return
         }
 
@@ -75,7 +64,7 @@ class AddMedicineViewModel: ObservableObject {
 
         stockViewModel.addMedicine(newMedicine, user: session.session?.email ?? "unknown_user") { success in
             if !success {
-                self.alertMessage = self.stockViewModel.errorMessage ?? "An error occurred while adding the medicine"
+                self.alertMessage = stockViewModel.errorMessage ?? "An error occurred while adding the medicine"
                 self.showingAlert = true
             }
             completion(success)

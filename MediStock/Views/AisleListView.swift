@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct AisleListView: View {
-    @ObservedObject var viewModel: MedicineStockViewModel
+    @EnvironmentObject var viewModel: MedicineStockViewModel
     @State private var showingAddMedicine = false
     @EnvironmentObject var session: SessionStore
 
@@ -41,7 +41,7 @@ struct AisleListView: View {
                 Image(systemName: "plus")
             })
             .sheet(isPresented: $showingAddMedicine) {
-                AddMedicineView(stockViewModel: viewModel, session: session)
+                AddMedicineView()
             }
         }
         .onAppear {
@@ -52,6 +52,6 @@ struct AisleListView: View {
 
 struct AisleListView_Previews: PreviewProvider {
     static var previews: some View {
-        AisleListView(viewModel: MedicineStockViewModel())
+        AisleListView()
     }
 }

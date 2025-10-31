@@ -1,14 +1,15 @@
 import SwiftUI
 
 struct AllMedicinesView: View {
-    @ObservedObject var viewModel: MedicineStockViewModel
+    @EnvironmentObject var viewModel: MedicineStockViewModel
+    
+    @EnvironmentObject var session: SessionStore
     @State private var filterText: String = ""
     @State private var sortOption: SortOption = .none
     @State private var showDeleteAlert = false
     @State private var medicineToDelete: Medicine?
     @State private var showDeleteError = false
     @State private var showingAddMedicine = false
-    @EnvironmentObject var session: SessionStore
     
     var body: some View {
         NavigationView {
@@ -127,7 +128,7 @@ struct AllMedicinesView: View {
             }
         }
         .sheet(isPresented: $showingAddMedicine) {
-            AddMedicineView(stockViewModel: viewModel, session: session)
+            AddMedicineView()
         }
         .onAppear {
             viewModel.fetchMedicines(sortedBy: sortOption)
@@ -156,6 +157,7 @@ enum SortOption: String, CaseIterable, Identifiable {
 
 struct AllMedicinesView_Previews: PreviewProvider {
     static var previews: some View {
-        AllMedicinesView(viewModel: MedicineStockViewModel())
+        AllMedicinesView()
+            .environmentObject(MedicineStockViewModel())
     }
 }

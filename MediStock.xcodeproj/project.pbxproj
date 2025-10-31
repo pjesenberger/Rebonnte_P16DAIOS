@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		50E4C8532EB4AEC100DB448B /* CustomTextFieldStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E4C8522EB4AEC100DB448B /* CustomTextFieldStyle.swift */; };
 		53E0D8972C06084700DE1134 /* MediStockApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8962C06084700DE1134 /* MediStockApp.swift */; };
 		53E0D8992C06084700DE1134 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 53E0D8982C06084700DE1134 /* ContentView.swift */; };
 		53E0D89B2C06084900DE1134 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 53E0D89A2C06084900DE1134 /* Assets.xcassets */; };
@@ -46,11 +47,11 @@
 		C678A4A92EA27DC00038A92A /* AddMedicineViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C678A4A82EA27DC00038A92A /* AddMedicineViewModel.swift */; };
 		C67B37AA2E99564D0019CDD1 /* AuthenticationViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C67B37A92E99564D0019CDD1 /* AuthenticationViewModel.swift */; };
 		C67B37AC2E9AA7580019CDD1 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = C67B37AB2E9AA7580019CDD1 /* User.swift */; };
-		C69EF1F22E91F9B7001C28AF /* CustomTextFieldStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C69EF1F12E91F9B7001C28AF /* CustomTextFieldStyle.swift */; };
 		C69EF1F42E920469001C28AF /* HistoryField.swift in Sources */ = {isa = PBXBuildFile; fileRef = C69EF1F32E920469001C28AF /* HistoryField.swift */; };
 		C6B1077B2EAEBB4C005D423A /* AuthenticationViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6B1077A2EAEBB4C005D423A /* AuthenticationViewModelTests.swift */; };
 		C6B1077D2EAEBB4F005D423A /* MedicineStockViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6B1077C2EAEBB4F005D423A /* MedicineStockViewModelTests.swift */; };
-		C6B107812EB0532B005D423A /* TestAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6B107802EB0532B005D423A /* TestAppDelegate.swift */; };
+		C6B1078C2EB4EA9E005D423A /* FirebaseServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6B1078B2EB4EA9E005D423A /* FirebaseServiceProtocol.swift */; };
+		C6B1078E2EB4EC99005D423A /* FirebaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6B1078D2EB4EC99005D423A /* FirebaseService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -64,6 +65,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		50E4C8522EB4AEC100DB448B /* CustomTextFieldStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextFieldStyle.swift; sourceTree = "<group>"; };
 		53E0D8932C06084700DE1134 /* MediStock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MediStock.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		53E0D8962C06084700DE1134 /* MediStockApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediStockApp.swift; sourceTree = "<group>"; };
 		53E0D8982C06084700DE1134 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -94,11 +96,11 @@
 		C678A4A82EA27DC00038A92A /* AddMedicineViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMedicineViewModel.swift; sourceTree = "<group>"; };
 		C67B37A92E99564D0019CDD1 /* AuthenticationViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationViewModel.swift; sourceTree = "<group>"; };
 		C67B37AB2E9AA7580019CDD1 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
-		C69EF1F12E91F9B7001C28AF /* CustomTextFieldStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTextFieldStyle.swift; sourceTree = "<group>"; };
 		C69EF1F32E920469001C28AF /* HistoryField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryField.swift; sourceTree = "<group>"; };
 		C6B1077A2EAEBB4C005D423A /* AuthenticationViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationViewModelTests.swift; sourceTree = "<group>"; };
 		C6B1077C2EAEBB4F005D423A /* MedicineStockViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicineStockViewModelTests.swift; sourceTree = "<group>"; };
-		C6B107802EB0532B005D423A /* TestAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestAppDelegate.swift; sourceTree = "<group>"; };
+		C6B1078B2EB4EA9E005D423A /* FirebaseServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseServiceProtocol.swift; sourceTree = "<group>"; };
+		C6B1078D2EB4EC99005D423A /* FirebaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -177,7 +179,6 @@
 				53E0D8A72C06084900DE1134 /* AddMedicineViewModelTests.swift */,
 				C6B1077A2EAEBB4C005D423A /* AuthenticationViewModelTests.swift */,
 				C6B1077C2EAEBB4F005D423A /* MedicineStockViewModelTests.swift */,
-				C6B107802EB0532B005D423A /* TestAppDelegate.swift */,
 			);
 			path = MediStockTests;
 			sourceTree = "<group>";
@@ -226,6 +227,8 @@
 		C69EF1D72E89030E001C28AF /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				C6B1078D2EB4EC99005D423A /* FirebaseService.swift */,
+				C6B1078B2EB4EA9E005D423A /* FirebaseServiceProtocol.swift */,
 				53E0D8DF2C0609B900DE1134 /* SessionStore.swift */,
 			);
 			path = Services;
@@ -251,7 +254,7 @@
 		C69EF1F02E91F978001C28AF /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				C69EF1F12E91F9B7001C28AF /* CustomTextFieldStyle.swift */,
+				50E4C8522EB4AEC100DB448B /* CustomTextFieldStyle.swift */,
 				C678A49A2E9EBEF90038A92A /* ErrorAlertModifier.swift */,
 				C678A49E2E9EBF1E0038A92A /* DeleteConfirmationModifier.swift */,
 				C678A4A02E9EBF2D0038A92A /* ErrorStateView.swift */,
@@ -397,7 +400,9 @@
 				C678A4992E9EBED20038A92A /* DisabledWhileDeletingModifier.swift in Sources */,
 				C67B37AA2E99564D0019CDD1 /* AuthenticationViewModel.swift in Sources */,
 				53E0D8EA2C066F7A00DE1134 /* HistoryEntry.swift in Sources */,
+				C6B1078C2EB4EA9E005D423A /* FirebaseServiceProtocol.swift in Sources */,
 				53E0D8E02C0609B900DE1134 /* SessionStore.swift in Sources */,
+				50E4C8532EB4AEC100DB448B /* CustomTextFieldStyle.swift in Sources */,
 				53E0D8DE2C0609A800DE1134 /* MedicineStockViewModel.swift in Sources */,
 				53E0D8992C06084700DE1134 /* ContentView.swift in Sources */,
 				53E0D8DC2C06099C00DE1134 /* Medicine.swift in Sources */,
@@ -408,12 +413,12 @@
 				53E0D8E62C066F4100DE1134 /* AisleListView.swift in Sources */,
 				53E0D8972C06084700DE1134 /* MediStockApp.swift in Sources */,
 				C678A49F2E9EBF1E0038A92A /* DeleteConfirmationModifier.swift in Sources */,
+				C6B1078E2EB4EC99005D423A /* FirebaseService.swift in Sources */,
 				53E0D8E82C066F6500DE1134 /* MedicineDetailView.swift in Sources */,
 				53E0D8EE2C06718100DE1134 /* AllMedicinesView.swift in Sources */,
 				C62CF9672E922C350040867F /* SymbolButton.swift in Sources */,
 				C678A49B2E9EBEF90038A92A /* ErrorAlertModifier.swift in Sources */,
 				C67B37AC2E9AA7580019CDD1 /* User.swift in Sources */,
-				C69EF1F22E91F9B7001C28AF /* CustomTextFieldStyle.swift in Sources */,
 				C678A4A72EA043FD0038A92A /* AddMedicineView.swift in Sources */,
 				C678A4A12E9EBF2D0038A92A /* ErrorStateView.swift in Sources */,
 				C69EF1F42E920469001C28AF /* HistoryField.swift in Sources */,
@@ -426,7 +431,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C6B1077D2EAEBB4F005D423A /* MedicineStockViewModelTests.swift in Sources */,
-				C6B107812EB0532B005D423A /* TestAppDelegate.swift in Sources */,
 				53E0D8A82C06084900DE1134 /* AddMedicineViewModelTests.swift in Sources */,
 				C6B1077B2EAEBB4C005D423A /* AuthenticationViewModelTests.swift in Sources */,
 			);

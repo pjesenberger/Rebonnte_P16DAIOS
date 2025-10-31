@@ -8,12 +8,10 @@
 import SwiftUI
 
 struct AddMedicineView: View {
-    @StateObject private var viewModel: AddMedicineViewModel
+    @StateObject private var viewModel = AddMedicineViewModel()
+    @EnvironmentObject var stockViewModel: MedicineStockViewModel
+    @EnvironmentObject var session: SessionStore
     @Environment(\.dismiss) var dismiss
-
-    init(stockViewModel: MedicineStockViewModel, session: SessionStore) {
-        _viewModel = StateObject(wrappedValue: AddMedicineViewModel(stockViewModel: stockViewModel, session: session))
-    }
 
     var body: some View {
         NavigationView {
@@ -54,9 +52,8 @@ struct AddMedicineView: View {
             .navigationTitle("Add Medicine")
             .navigationBarTitleDisplayMode(.inline)
             .navigationBarItems(
-                leading: Button("Cancel") { dismiss() },
-                trailing: Button("Save") { viewModel.save { success in if success { dismiss() } } }
-                    .disabled(!viewModel.isFormValid)
+                leading: cancelButton,
+                trailing: saveButton
             )
             .alert("Error", isPresented: $viewModel.showingAlert) {
                 Button("OK", role: .cancel) { }
@@ -64,16 +61,40 @@ struct AddMedicineView: View {
                 Text(viewModel.alertMessage)
             }
             .overlay {
-                if viewModel.stockViewModel.isLoading {
-                    ProgressView().scaleEffect(1.5)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                        .background(Color.black.opacity(0.2))
+                if stockViewModel.isLoading {
+                    loadingOverlay
                 }
             }
         }
     }
+    
+    private var cancelButton: some View {
+        Button("Cancel") {
+            dismiss()
+        }
+    }
+    
+    private var saveButton: some View {
+        Button("Save") {
+            viewModel.save(stockViewModel: stockViewModel, session: session) { success in
+                if success {
+                    dismiss()
+                }
+            }
+        }
+        .disabled(!viewModel.isFormValid)
+    }
+    
+    private var loadingOverlay: some View {
+        ProgressView()
+            .scaleEffect(1.5)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(Color.black.opacity(0.2))
+    }
 }
 
 #Preview {
-    AddMedicineView(stockViewModel: MedicineStockViewModel(), session: SessionStore())
+    AddMedicineView()
+        .environmentObject(MedicineStockViewModel())
+        .environmentObject(SessionStore())
 }

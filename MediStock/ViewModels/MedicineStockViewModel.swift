@@ -25,57 +25,39 @@ class MedicineStockViewModel: ObservableObject {
     private var lastHistoryDocument: DocumentSnapshot?
     private let historyPageSize = 10
     
-    // Lazy initialization of Firestore
-    private var _db: Firestore?
-    private var db: Firestore {
-        if _db == nil {
-            let isRunningTests = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
-            if !isRunningTests {
-                _db = Firestore.firestore()
-            }
-        }
-        return _db ?? Firestore.firestore()
+    // Firebase Service - Injection de dépendance
+    private let firebaseService: FirebaseServiceProtocol
+    
+    init(firebaseService: FirebaseServiceProtocol = FirebaseService()) {
+        self.firebaseService = firebaseService
     }
     
     // MARK: - Medicines funcs
     
     func fetchMedicines(sortedBy sortOption: SortOption = .none) {
-        let isRunningTests = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
-        guard !isRunningTests else {
-            isLoading = false
-            return
-        }
         
         isLoading = true
         errorMessage = nil
         lastDocument = nil
         hasMoreMedicines = true
         
-        var query: Query = db.collection("medicines").limit(to: pageSize)
-        
-        switch sortOption {
-        case .name:
-            query = query.order(by: "name", descending: false)
-        case .stock:
-            query = query.order(by: "stock", descending: false)
-        case .none:
-            break
-        }
-        
-        query.getDocuments { (querySnapshot, error) in
-            self.isLoading = false
+        firebaseService.fetchMedicines(sortedBy: sortOption, pageSize: pageSize, lastDocument: nil) { [weak self] result in
+            guard let self = self else { return }
             
-            if let error = error {
-                print("Error getting documents: \(error)")
-                self.errorMessage = "Failed to load medicines. Please try again."
-            } else {
-                self.medicines = querySnapshot?.documents.compactMap { document in
-                    try? document.data(as: Medicine.self)
-                } ?? []
+            DispatchQueue.main.async {
+                self.isLoading = false
                 
-                self.lastDocument = querySnapshot?.documents.last
-                self.hasMoreMedicines = (querySnapshot?.documents.count ?? 0) >= self.pageSize
-                self.errorMessage = nil
+                switch result {
+                case .success(let (medicines, lastDoc)):
+                    self.medicines = medicines
+                    self.lastDocument = lastDoc
+                    self.hasMoreMedicines = medicines.count >= self.pageSize
+                    self.errorMessage = nil
+                    
+                case .failure(let error):
+                    print("Error getting documents: \(error)")
+                    self.errorMessage = "Failed to load medicines. Please try again."
+                }
             }
         }
     }
@@ -83,124 +65,92 @@ class MedicineStockViewModel: ObservableObject {
     func loadMoreMedicines(sortedBy sortOption: SortOption = .none) {
         guard !isLoadingMore && hasMoreMedicines, let lastDocument = lastDocument else { return }
         
-        // Skip Firebase calls in tests
-        let isRunningTests = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
-        guard !isRunningTests else { return }
-        
         isLoadingMore = true
         
-        var query: Query = db.collection("medicines").limit(to: pageSize)
-        
-        switch sortOption {
-        case .name:
-            query = query.order(by: "name", descending: false)
-        case .stock:
-            query = query.order(by: "stock", descending: false)
-        case .none:
-            break
-        }
-        
-        query = query.start(afterDocument: lastDocument)
-        
-        query.getDocuments { (querySnapshot, error) in
-            self.isLoadingMore = false
+        firebaseService.fetchMedicines(sortedBy: sortOption, pageSize: pageSize, lastDocument: lastDocument) { [weak self] result in
+            guard let self = self else { return }
             
-            if let error = error {
-                print("Error loading more documents: \(error)")
-            } else {
-                let newMedicines = querySnapshot?.documents.compactMap { document in
-                    try? document.data(as: Medicine.self)
-                } ?? []
+            DispatchQueue.main.async {
+                self.isLoadingMore = false
                 
-                self.medicines.append(contentsOf: newMedicines)
-                self.lastDocument = querySnapshot?.documents.last
-                self.hasMoreMedicines = (querySnapshot?.documents.count ?? 0) >= self.pageSize
+                switch result {
+                case .success(let (newMedicines, lastDoc)):
+                    self.medicines.append(contentsOf: newMedicines)
+                    self.lastDocument = lastDoc
+                    self.hasMoreMedicines = newMedicines.count >= self.pageSize
+                    
+                case .failure(let error):
+                    print("Error loading more documents: \(error)")
+                }
             }
         }
     }
     
     func listenToMedicine(id: String) {
-        // Skip Firebase calls in tests
-        let isRunningTests = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
-        guard !isRunningTests else { return }
         
-        db.collection("medicines").document(id).addSnapshotListener { documentSnapshot, error in
-            if let document = documentSnapshot {
-                if let updatedMedicine = try? document.data(as: Medicine.self) {
-                    DispatchQueue.main.async {
-                        if let index = self.medicines.firstIndex(where: { $0.id == id }) {
-                            self.medicines[index] = updatedMedicine
-                        }
-                    }
+        _ = firebaseService.listenToMedicine(id: id) { [weak self] updatedMedicine in
+            DispatchQueue.main.async {
+                if let index = self?.medicines.firstIndex(where: { $0.id == id }) {
+                    self?.medicines[index] = updatedMedicine
                 }
             }
         }
     }
     
     func addMedicine(_ medicine: Medicine, user: String, completion: ((Bool) -> Void)? = nil) {
-        // Skip Firebase calls in tests
-        let isRunningTests = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
-        guard !isRunningTests else {
-            completion?(true)
-            return
-        }
         
         isLoading = true
         errorMessage = nil
         
         DispatchQueue.global(qos: .userInitiated).async {
-            do {
-                let documentRef = self.db.collection("medicines").document()
-                var newMedicine = medicine
-                newMedicine.id = documentRef.documentID
+            self.firebaseService.addMedicine(medicine) { [weak self] success in
+                guard let self = self else { return }
                 
-                try documentRef.setData(from: newMedicine) { error in
-                    DispatchQueue.main.async {
-                        self.isLoading = false
-                        
-                        if let error = error {
-                            print("Error adding document: \(error)")
-                            self.errorMessage = "Failed to add medicine. Please try again."
-                            completion?(false)
-                        } else {
-                            self.addHistory(
-                                action: "Added \(medicine.name)",
-                                user: user,
-                                medicineId: newMedicine.id ?? "",
-                                details: "New medicine added - Stock: \(medicine.stock), Aisle: \(medicine.aisle)"
-                            )
-                            self.errorMessage = nil
-                            completion?(true)
-                        }
-                    }
-                }
-            } catch let error {
                 DispatchQueue.main.async {
                     self.isLoading = false
-                    print("Error encoding medicine: \(error)")
-                    self.errorMessage = "Failed to add medicine. Please try again."
-                    completion?(false)
+                    
+                    if success {
+                        let historyEntry = HistoryEntry(
+                            medicineId: medicine.id ?? "",
+                            user: user,
+                            action: "Added \(medicine.name)",
+                            details: "New medicine added - Stock: \(medicine.stock), Aisle: \(medicine.aisle)"
+                        )
+                        self.addHistory(historyEntry)
+                        self.errorMessage = nil
+                        completion?(true)
+                    } else {
+                        self.errorMessage = "Failed to add medicine. Please try again."
+                        completion?(false)
+                    }
                 }
             }
         }
     }
     
-    // Unused func
+    // Unused func - conservée pour compatibilité
     func addRandomMedicine(user: String) {
-        // Skip Firebase calls in tests
-        let isRunningTests = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
-        guard !isRunningTests else { return }
         
-        let medicine = Medicine(name: "Medicine \(Int.random(in: 1...100))", stock: Int.random(in: 1...100), aisle: "Aisle \(Int.random(in: 1...10))")
+        let medicine = Medicine(
+            name: "Medicine \(Int.random(in: 1...100))",
+            stock: Int.random(in: 1...100),
+            aisle: "Aisle \(Int.random(in: 1...10))"
+        )
         
         DispatchQueue.global(qos: .userInitiated).async {
-            do {
-                try self.db.collection("medicines").document(medicine.id ?? UUID().uuidString).setData(from: medicine)
-                self.addHistory(action: "Added \(medicine.name)", user: user, medicineId: medicine.id ?? "", details: "Added new medicine")
-            } catch let error {
-                DispatchQueue.main.async {
-                    print("Error adding document: \(error)")
-                    self.errorMessage = "Failed to add medicine. Please try again."
+            self.firebaseService.addMedicine(medicine) { [weak self] success in
+                if success {
+                    let historyEntry = HistoryEntry(
+                        medicineId: medicine.id ?? "",
+                        user: user,
+                        action: "Added \(medicine.name)",
+                        details: "Added new medicine"
+                    )
+                    self?.addHistory(historyEntry)
+                } else {
+                    DispatchQueue.main.async {
+                        self?.errorMessage = "Failed to add medicine. Please try again."
+                    }
                 }
             }
         }
@@ -212,29 +162,24 @@ class MedicineStockViewModel: ObservableObject {
             return
         }
         
-        // Skip Firebase calls in tests
-        let isRunningTests = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
-        guard !isRunningTests else {
-            completion?(true)
-            return
-        }
-        
         isDeletingMedicine = true
         errorMessage = nil
         
         DispatchQueue.global(qos: .userInitiated).async {
-            self.db.collection("medicines").document(id).delete { error in
+            self.firebaseService.deleteMedicine(medicine) { [weak self] success in
+                guard let self = self else { return }
+                
                 DispatchQueue.main.async {
                     self.isDeletingMedicine = false
                     
-                    if let error = error {
-                        print("Error removing document: \(error)")
-                        self.errorMessage = "Failed to delete medicine. Please try again."
-                        completion?(false)
-                    } else {
+                    if success {
                         self.medicines.removeAll { $0.id == id }
                         self.errorMessage = nil
                         completion?(true)
+                    } else {
+                        print("Error removing document")
+                        self.errorMessage = "Failed to delete medicine. Please try again."
+                        completion?(false)
                     }
                 }
             }
@@ -242,17 +187,12 @@ class MedicineStockViewModel: ObservableObject {
     }
     
     func deleteMedicines(at offsets: IndexSet) {
-        // Skip Firebase calls in tests
-        let isRunningTests = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
-        guard !isRunningTests else { return }
         
         DispatchQueue.global(qos: .userInitiated).async {
             offsets.map { self.medicines[$0] }.forEach { medicine in
-                if let id = medicine.id {
-                    self.db.collection("medicines").document(id).delete { error in
-                        if let error = error {
-                            print("Error removing document: \(error)")
-                        }
+                self.firebaseService.deleteMedicine(medicine) { success in
+                    if !success {
+                        print("Error removing document")
                     }
                 }
             }
@@ -264,28 +204,15 @@ class MedicineStockViewModel: ObservableObject {
     }
     
     func fetchAisles() {
-        // Skip Firebase calls in tests
-        let isRunningTests = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
-        guard !isRunningTests else {
-            isLoading = false
-            return
-        }
         
         isLoading = true
         errorMessage = nil
         
-        db.collection("medicines").addSnapshotListener { (querySnapshot, error) in
-            self.isLoading = false
-            
-            if let error = error {
-                print("Error getting documents: \(error)")
-                self.errorMessage = "Failed to load aisles. Please try again."
-            } else {
-                let allMedicines = querySnapshot?.documents.compactMap { document in
-                    try? document.data(as: Medicine.self)
-                } ?? []
-                self.aisles = Array(Set(allMedicines.map { $0.aisle })).sorted()
-                self.errorMessage = nil
+        firebaseService.fetchAllAisles { [weak self] aisles in
+            DispatchQueue.main.async {
+                self?.isLoading = false
+                self?.aisles = aisles
+                self?.errorMessage = nil
             }
         }
     }
@@ -300,44 +227,41 @@ class MedicineStockViewModel: ObservableObject {
         updateStock(medicine, by: -1, user: user, completion: completion)
     }
     
-    
     private func updateStock(_ medicine: Medicine, by amount: Int, user: String, completion: ((Int) -> Void)? = nil) {
         guard let id = medicine.id else { return }
         
-        // Skip Firebase calls in tests
-        let isRunningTests = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
-        guard !isRunningTests else {
-            let newStock = medicine.stock + amount
-            if let index = self.medicines.firstIndex(where: { $0.id == id }) {
-                self.medicines[index].stock = newStock
-            }
-            completion?(newStock)
-            return
-        }
-        
         let newStock = medicine.stock + amount
+        
+        if let index = self.medicines.firstIndex(where: { $0.id == id }) {
+            self.medicines[index].stock = newStock
+        }
+        completion?(newStock)
+        
         isUpdatingMedicine = true
         
         DispatchQueue.global(qos: .userInitiated).async {
-            self.db.collection("medicines").document(id).updateData([
-                "stock": newStock
-            ]) { error in
+            self.firebaseService.updateMedicineStock(id, newStock: newStock) { [weak self] success in
+                guard let self = self else { return }
+                
                 DispatchQueue.main.async {
                     self.isUpdatingMedicine = false
-                    if let error = error {
-                        print("Error updating stock: \(error)")
-                        self.errorMessage = "Failed to update stock. Please try again."
-                    } else {
+                    
+                    if success {
                         if let index = self.medicines.firstIndex(where: { $0.id == id }) {
                             self.medicines[index].stock = newStock
                             completion?(newStock)
                         }
-                        self.addHistory(
-                            action: "\(amount > 0 ? "Increased" : "Decreased") stock of \(medicine.name) by \(abs(amount))",
-                            user: user,
+                        
+                        let historyEntry = HistoryEntry(
                             medicineId: id,
+                            user: user,
+                            action: "\(amount > 0 ? "Increased" : "Decreased") stock of \(medicine.name) by \(abs(amount))",
                             details: "Stock changed from \(medicine.stock) to \(newStock)"
                         )
+                        self.addHistory(historyEntry)
+                    } else {
+                        print("Error updating stock")
+                        self.errorMessage = "Failed to update stock. Please try again."
                     }
                 }
             }
@@ -347,30 +271,27 @@ class MedicineStockViewModel: ObservableObject {
     func updateMedicine(_ medicine: Medicine, user: String) {
         guard let id = medicine.id else { return }
         
-        // Skip Firebase calls in tests
-        let isRunningTests = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
-        guard !isRunningTests else { return }
-        
         isUpdatingMedicine = true
         
         DispatchQueue.global(qos: .userInitiated).async {
-            do {
-                try self.db.collection("medicines").document(id).setData(from: medicine) { error in
-                    DispatchQueue.main.async {
-                        self.isUpdatingMedicine = false
-                        if let error = error {
-                            print("Error updating document: \(error)")
-                            self.errorMessage = "Failed to update medicine. Please try again."
-                        } else {
-                            self.addHistory(action: "Updated \(medicine.name)", user: user, medicineId: id, details: "Updated medicine details")
-                        }
-                    }
-                }
-            } catch let error {
+            self.firebaseService.updateMedicine(medicine) { [weak self] success in
+                guard let self = self else { return }
+                
                 DispatchQueue.main.async {
                     self.isUpdatingMedicine = false
-                    print("Error updating document: \(error)")
-                    self.errorMessage = "Failed to update medicine. Please try again."
+                    
+                    if success {
+                        let historyEntry = HistoryEntry(
+                            medicineId: id,
+                            user: user,
+                            action: "Updated \(medicine.name)",
+                            details: "Updated medicine details"
+                        )
+                        self.addHistory(historyEntry)
+                    } else {
+                        print("Error updating document")
+                        self.errorMessage = "Failed to update medicine. Please try again."
+                    }
                 }
             }
         }
@@ -378,50 +299,35 @@ class MedicineStockViewModel: ObservableObject {
     
     // MARK: - History funcs
     
-    private func addHistory(action: String, user: String, medicineId: String, details: String) {
-        // Skip Firebase calls in tests
-        let isRunningTests = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
-        guard !isRunningTests else { return }
-        
-        let history = HistoryEntry(medicineId: medicineId, user: user, action: action, details: details)
-        
+    private func addHistory(_ entry: HistoryEntry) {
         DispatchQueue.global(qos: .userInitiated).async {
-            do {
-                try self.db.collection("history").document(history.id ?? UUID().uuidString).setData(from: history)
-            } catch let error {
-                print("Error adding history: \(error)")
-            }
+            self.firebaseService.addHistory(entry)
         }
     }
     
     func fetchHistory(for medicine: Medicine) {
         guard let medicineId = medicine.id else { return }
         
-        // Skip Firebase calls in tests
-        let isRunningTests = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
-        guard !isRunningTests else { return }
-        
         lastHistoryDocument = nil
         hasMoreHistory = true
         
-        db.collection("history")
-            .whereField("medicineId", isEqualTo: medicineId)
-            .order(by: "timestamp", descending: true)
-            .limit(to: historyPageSize)
-            .getDocuments { (querySnapshot, error) in
-                if let error = error {
+        firebaseService.fetchHistory(for: medicineId, pageSize: historyPageSize, lastDocument: nil) { [weak self] result in
+            guard let self = self else { return }
+            
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let (history, lastDoc)):
+                    self.history = history
+                    self.lastHistoryDocument = lastDoc
+                    self.hasMoreHistory = history.count >= self.historyPageSize
+                    self.errorMessage = nil
+                    
+                case .failure(let error):
                     print("Error getting history: \(error)")
                     self.errorMessage = "Failed to load history. Please try again."
-                } else {
-                    self.history = querySnapshot?.documents.compactMap { document in
-                        try? document.data(as: HistoryEntry.self)
-                    } ?? []
-                    
-                    self.lastHistoryDocument = querySnapshot?.documents.last
-                    self.hasMoreHistory = (querySnapshot?.documents.count ?? 0) >= self.historyPageSize
-                    self.errorMessage = nil
                 }
             }
+        }
     }
     
     func loadMoreHistory(for medicine: Medicine) {
@@ -429,32 +335,25 @@ class MedicineStockViewModel: ObservableObject {
               let medicineId = medicine.id,
               let lastDocument = lastHistoryDocument else { return }
         
-        // Skip Firebase calls in tests
-        let isRunningTests = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
-        guard !isRunningTests else { return }
-        
         isLoadingMoreHistory = true
         
-        db.collection("history")
-            .whereField("medicineId", isEqualTo: medicineId)
-            .order(by: "timestamp", descending: true)
-            .start(afterDocument: lastDocument)
-            .limit(to: historyPageSize)
-            .getDocuments { (querySnapshot, error) in
+        firebaseService.fetchHistory(for: medicineId, pageSize: historyPageSize, lastDocument: lastDocument) { [weak self] result in
+            guard let self = self else { return }
+            
+            DispatchQueue.main.async {
                 self.isLoadingMoreHistory = false
                 
-                if let error = error {
-                    print("Error loading more history: \(error)")
-                } else {
-                    let newHistory = querySnapshot?.documents.compactMap { document in
-                        try? document.data(as: HistoryEntry.self)
-                    } ?? []
-                    
+                switch result {
+                case .success(let (newHistory, lastDoc)):
                     self.history.append(contentsOf: newHistory)
-                    self.lastHistoryDocument = querySnapshot?.documents.last
-                    self.hasMoreHistory = (querySnapshot?.documents.count ?? 0) >= self.historyPageSize
+                    self.lastHistoryDocument = lastDoc
+                    self.hasMoreHistory = newHistory.count >= self.historyPageSize
+                    
+                case .failure(let error):
+                    print("Error loading more history: \(error)")
                 }
             }
+        }
     }
 }
 

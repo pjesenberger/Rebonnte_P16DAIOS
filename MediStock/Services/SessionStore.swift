@@ -4,13 +4,15 @@ import Firebase
 class SessionStore: ObservableObject {
     @Published var session: User?
     var handle: AuthStateDidChangeListenerHandle?
+    
+    private let firebaseService: FirebaseServiceProtocol
+
+    init(firebaseService: FirebaseServiceProtocol = FirebaseService()) {
+        self.firebaseService = firebaseService
+    }
 
     func listen() {
-        let isRunningTests = ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil
-        
-        guard !isRunningTests else { return }
-        
-        handle = Auth.auth().addStateDidChangeListener { (auth, user) in
+        handle = firebaseService.auth.addStateDidChangeListener { (auth, user) in
             if let user = user {
                 self.session = User(uid: user.uid, email: user.email)
             } else {
@@ -21,7 +23,7 @@ class SessionStore: ObservableObject {
 
     func signOut() {
         do {
-            try Auth.auth().signOut()
+            try firebaseService.auth.signOut()
             self.session = nil
         } catch let error {
             print("Error signing out: \(error.localizedDescription)")
@@ -30,7 +32,7 @@ class SessionStore: ObservableObject {
 
     func unbind() {
         if let handle = handle {
-            Auth.auth().removeStateDidChangeListener(handle)
+            firebaseService.auth.removeStateDidChangeListener(handle)
         }
     }
 }
