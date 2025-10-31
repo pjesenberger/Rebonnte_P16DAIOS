@@ -52,6 +52,7 @@
 		C6B1077D2EAEBB4F005D423A /* MedicineStockViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6B1077C2EAEBB4F005D423A /* MedicineStockViewModelTests.swift */; };
 		C6B1078C2EB4EA9E005D423A /* FirebaseServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6B1078B2EB4EA9E005D423A /* FirebaseServiceProtocol.swift */; };
 		C6B1078E2EB4EC99005D423A /* FirebaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6B1078D2EB4EC99005D423A /* FirebaseService.swift */; };
+		C6B107902EB4F457005D423A /* MockFirebaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C6B1078F2EB4F457005D423A /* MockFirebaseService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -101,6 +102,7 @@
 		C6B1077C2EAEBB4F005D423A /* MedicineStockViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedicineStockViewModelTests.swift; sourceTree = "<group>"; };
 		C6B1078B2EB4EA9E005D423A /* FirebaseServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseServiceProtocol.swift; sourceTree = "<group>"; };
 		C6B1078D2EB4EC99005D423A /* FirebaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseService.swift; sourceTree = "<group>"; };
+		C6B1078F2EB4F457005D423A /* MockFirebaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockFirebaseService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -176,6 +178,7 @@
 		53E0D8A62C06084900DE1134 /* MediStockTests */ = {
 			isa = PBXGroup;
 			children = (
+				C6B107912EB4F45B005D423A /* Mocks */,
 				53E0D8A72C06084900DE1134 /* AddMedicineViewModelTests.swift */,
 				C6B1077A2EAEBB4C005D423A /* AuthenticationViewModelTests.swift */,
 				C6B1077C2EAEBB4F005D423A /* MedicineStockViewModelTests.swift */,
@@ -276,6 +279,14 @@
 				C678A4A62EA043FD0038A92A /* AddMedicineView.swift */,
 			);
 			path = MedicineViews;
+			sourceTree = "<group>";
+		};
+		C6B107912EB4F45B005D423A /* Mocks */ = {
+			isa = PBXGroup;
+			children = (
+				C6B1078F2EB4F457005D423A /* MockFirebaseService.swift */,
+			);
+			path = Mocks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -430,6 +441,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C6B107902EB4F457005D423A /* MockFirebaseService.swift in Sources */,
 				C6B1077D2EAEBB4F005D423A /* MedicineStockViewModelTests.swift in Sources */,
 				53E0D8A82C06084900DE1134 /* AddMedicineViewModelTests.swift in Sources */,
 				C6B1077B2EAEBB4C005D423A /* AuthenticationViewModelTests.swift in Sources */,

@@ -235,7 +235,6 @@ class MedicineStockViewModel: ObservableObject {
         if let index = self.medicines.firstIndex(where: { $0.id == id }) {
             self.medicines[index].stock = newStock
         }
-        completion?(newStock)
         
         isUpdatingMedicine = true
         
@@ -249,8 +248,9 @@ class MedicineStockViewModel: ObservableObject {
                     if success {
                         if let index = self.medicines.firstIndex(where: { $0.id == id }) {
                             self.medicines[index].stock = newStock
-                            completion?(newStock)
                         }
+                        
+                        completion?(newStock)
                         
                         let historyEntry = HistoryEntry(
                             medicineId: id,
@@ -260,8 +260,14 @@ class MedicineStockViewModel: ObservableObject {
                         )
                         self.addHistory(historyEntry)
                     } else {
+                        if let index = self.medicines.firstIndex(where: { $0.id == id }) {
+                            self.medicines[index].stock = medicine.stock
+                        }
+                        
                         print("Error updating stock")
                         self.errorMessage = "Failed to update stock. Please try again."
+                        
+                        completion?(medicine.stock)
                     }
                 }
             }
