@@ -14,12 +14,25 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
     
-    - name: Setup GoogleService-Info.plist
-      env:
-        GOOGLE_SERVICES_PLIST: ${{ secrets.GOOGLE_SERVICES_PLIST }}
+    - name: Setup GoogleService-Info.plist (mock for tests)
       run: |
         mkdir -p MediStock/Configurations
-        echo "$GOOGLE_SERVICES_PLIST" > MediStock/Configurations/GoogleService-Info.plist
+        cat > MediStock/Configurations/GoogleService-Info.plist << 'EOF'
+        <?xml version="1.0" encoding="UTF-8"?>
+        <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+        <plist version="1.0">
+        <dict>
+            <key>API_KEY</key>
+            <string>fake-api-key-for-tests</string>
+            <key>GCM_SENDER_ID</key>
+            <string>123456789</string>
+            <key>GOOGLE_APP_ID</key>
+            <string>1:123456789:ios:abc123def456</string>
+            <key>PROJECT_ID</key>
+            <string>test-project</string>
+        </dict>
+        </plist>
+        EOF
     
     - name: Build and Test
       run: |
@@ -37,4 +50,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: test-results
-        path: TestResults/
+        path: |
+          /Users/runner/Library/Developer/Xcode/DerivedData/MediStock-*/Logs/Test/*.xcresult
