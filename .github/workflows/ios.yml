@@ -23,16 +23,39 @@ jobs:
         <plist version="1.0">
         <dict>
             <key>API_KEY</key>
-            <string>fake-api-key-for-tests</string>
+            <string>AIzaSyDummyKeyForTestingPurposesOnly123456</string>
             <key>GCM_SENDER_ID</key>
-            <string>123456789</string>
-            <key>GOOGLE_APP_ID</key>
-            <string>1:123456789:ios:abc123def456</string>
+            <string>123456789012</string>
+            <key>PLIST_VERSION</key>
+            <string>1</string>
+            <key>BUNDLE_ID</key>
+            <string>com.rebonnte.MediStock</string>
             <key>PROJECT_ID</key>
-            <string>test-project</string>
+            <string>medistock-test</string>
+            <key>STORAGE_BUCKET</key>
+            <string>medistock-test.appspot.com</string>
+            <key>IS_ADS_ENABLED</key>
+            <false/>
+            <key>IS_ANALYTICS_ENABLED</key>
+            <false/>
+            <key>IS_APPINVITE_ENABLED</key>
+            <false/>
+            <key>IS_GCM_ENABLED</key>
+            <true/>
+            <key>IS_SIGNIN_ENABLED</key>
+            <true/>
+            <key>GOOGLE_APP_ID</key>
+            <string>1:123456789012:ios:abcdef1234567890</string>
+            <key>DATABASE_URL</key>
+            <string>https://medistock-test.firebaseio.com</string>
         </dict>
         </plist>
         EOF
+    
+    - name: Disable Firebase in tests
+      run: |
+        # Commente FirebaseApp.configure() pour les tests
+        sed -i '' 's/FirebaseApp.configure()/\/\/ FirebaseApp.configure() \/\/ Disabled for CI tests/' MediStock/AppDelegate.swift
     
     - name: Build and Test
       run: |
@@ -41,8 +64,6 @@ jobs:
           -scheme MediStock \
           -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.4' \
           -only-testing:MediStockTests \
-          GCC_PREPROCESSOR_DEFINITIONS='$(inherited) TESTING=1' \
-          SWIFT_ACTIVE_COMPILATION_CONDITIONS='$(inherited) TESTING' \
           CODE_SIGN_IDENTITY="" \
           CODE_SIGNING_REQUIRED=NO \
           CODE_SIGNING_ALLOWED=NO
