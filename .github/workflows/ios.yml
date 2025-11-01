@@ -14,6 +14,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
     
+    - name: Find AppDelegate
+      run: find . -name "AppDelegate.swift" -type f
+    
     - name: Setup GoogleService-Info.plist
       run: |
         mkdir -p MediStock/Configurations
@@ -26,36 +29,20 @@ jobs:
             <string>AIzaSyDummyKeyForTestingPurposesOnly123456</string>
             <key>GCM_SENDER_ID</key>
             <string>123456789012</string>
-            <key>PLIST_VERSION</key>
-            <string>1</string>
-            <key>BUNDLE_ID</key>
-            <string>com.rebonnte.MediStock</string>
-            <key>PROJECT_ID</key>
-            <string>medistock-test</string>
-            <key>STORAGE_BUCKET</key>
-            <string>medistock-test.appspot.com</string>
-            <key>IS_ADS_ENABLED</key>
-            <false/>
-            <key>IS_ANALYTICS_ENABLED</key>
-            <false/>
-            <key>IS_APPINVITE_ENABLED</key>
-            <false/>
-            <key>IS_GCM_ENABLED</key>
-            <true/>
-            <key>IS_SIGNIN_ENABLED</key>
-            <true/>
             <key>GOOGLE_APP_ID</key>
             <string>1:123456789012:ios:abcdef1234567890</string>
-            <key>DATABASE_URL</key>
-            <string>https://medistock-test.firebaseio.com</string>
+            <key>PROJECT_ID</key>
+            <string>medistock-test</string>
         </dict>
         </plist>
         EOF
     
     - name: Disable Firebase in tests
       run: |
-        # Commente FirebaseApp.configure() pour les tests
-        sed -i '' 's/FirebaseApp.configure()/\/\/ FirebaseApp.configure() \/\/ Disabled for CI tests/' MediStock/AppDelegate.swift
+        APPDELEGATE=$(find . -name "AppDelegate.swift" -type f | head -n 1)
+        if [ -f "$APPDELEGATE" ]; then
+          sed -i '' 's/FirebaseApp.configure()/\/\/ FirebaseApp.configure()/' "$APPDELEGATE"
+        fi
     
     - name: Build and Test
       run: |
