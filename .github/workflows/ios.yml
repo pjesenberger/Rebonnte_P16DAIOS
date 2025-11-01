@@ -14,7 +14,7 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
     
-    - name: Setup GoogleService-Info.plist (mock for tests)
+    - name: Setup GoogleService-Info.plist
       run: |
         mkdir -p MediStock/Configurations
         cat > MediStock/Configurations/GoogleService-Info.plist << 'EOF'
@@ -41,6 +41,8 @@ jobs:
           -scheme MediStock \
           -destination 'platform=iOS Simulator,name=iPhone 16,OS=18.4' \
           -only-testing:MediStockTests \
+          GCC_PREPROCESSOR_DEFINITIONS='$(inherited) TESTING=1' \
+          SWIFT_ACTIVE_COMPILATION_CONDITIONS='$(inherited) TESTING' \
           CODE_SIGN_IDENTITY="" \
           CODE_SIGNING_REQUIRED=NO \
           CODE_SIGNING_ALLOWED=NO
